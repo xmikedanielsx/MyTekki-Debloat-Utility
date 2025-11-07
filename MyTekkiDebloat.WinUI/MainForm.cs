@@ -14,30 +14,35 @@ using RTControls = ReaLTaiizor.Controls;
 
 namespace MyTekkiDebloat.WinUI
 {
-    public partial class MainForm : Form
+    public partial class MainForm : ReaLTaiizor.Forms.MetroForm
     {
         private readonly IDebloatService _debloatService;
         private readonly string? _originalUserSid;
         
         // Core Controls
-        private TabControl _tabControl = null!;
-        private TextBox _searchBox = null!;
+        private RTControls.MetroTabControl _tabControl = null!;
+        private RTControls.MetroTextBox _searchBox = null!;
         private RTControls.Button _scanButton = null!;
         private RTControls.Button _applySelectedButton = null!;
         private Label _statusLabel = null!;
         private ProgressBar _progressBar = null!;
         private RTControls.Panel _statusPanel = null!;
         
+        // Main Tweaks Tab panels - need references for theming
+        private RTControls.Panel _mainContainer = null!;
+        private RTControls.Panel _topPanel = null!;
+        private Label _presetLabel = null!;
+        
         // Split panel design
         private SplitContainer _mainSplitContainer = null!;
         private CheckedListBox _allTweaksListBox = null!;
         private ListBox _tweaksToApplyListBox = null!;
-        private ComboBox _presetComboBox = null!;
+        private RTControls.MetroComboBox _presetComboBox = null!;
         private Label _leftPanelLabel = null!;
         private Label _rightPanelLabel = null!;
         
         // Menu bar
-        private MenuStrip _menuStrip = null!;
+        private MenuStrip _menuStrip = null!;  // Back to standard MenuStrip
         
         // ReaLTaiizor Theme Manager
         private MetroStyleManager _styleManager = null!;
@@ -97,93 +102,221 @@ namespace MyTekkiDebloat.WinUI
             // Initialize ReaLTaiizor Theme Manager
             SetupReaLTaiizorTheme();
 
-            // Configure form with modern dark styling
+            // Configure form with modern dark styling and proper MetroForm properties
             Size = new Size(1400, 900);
-            Text = "MyTekki Debloat - Professional Windows Optimization";
+            Text = GetDynamicWindowTitle(); // Set dynamic title with user info
             StartPosition = FormStartPosition.CenterScreen;
             MinimumSize = new Size(1200, 700);
             BackColor = Color.FromArgb(45, 45, 48);
             ForeColor = Color.White;
             
+            // Important: Add menu first (bottom in z-order), then tab control
             CreateMenuBar();
             CreateMainControls();
+            
+            // Apply initial theme to ensure menu colors are correct
+            SetDarkTheme();
             
             ResumeLayout();
         }
 
         private void SetupReaLTaiizorTheme()
         {
-            // Initialize Metro Style Manager for ReaLTaiizor components
+            // Initialize Metro Style Manager properly for MetroForm
             _styleManager = new MetroStyleManager(this);
             _styleManager.Style = ReaLTaiizor.Enum.Metro.Style.Dark;
+            
+            // Configure MetroForm properties for proper title bar and window controls
+            this.AllowResize = true;
+            this.ShowBorder = true;
+            this.ShowHeader = true;
+            this.HeaderColor = Color.FromArgb(45, 45, 48); // Dark header to match form
+            this.HeaderHeight = 32;
+            this.TextColor = Color.FromArgb(180, 180, 180); // Darker grey text for better visibility
+            this.ShowLeftRect = false; // No left accent rectangle
+            this.ShowTitle = true; // Ensure title is shown
+            
+            // Add MetroControlBox for window controls (minimize, maximize, close)
+            var controlBox = new RTControls.MetroControlBox
+            {
+                StyleManager = _styleManager,
+                Style = ReaLTaiizor.Enum.Metro.Style.Dark,
+                MinimizeBox = true,
+                MaximizeBox = true,
+                DefaultLocation = ReaLTaiizor.Enum.Metro.LocationType.Edge,
+                Anchor = AnchorStyles.Top | AnchorStyles.Right,
+                Size = new Size(100, 25),
+                Visible = true
+            };
+            Controls.Add(controlBox);
+            controlBox.BringToFront(); // Ensure it's on top
+        }
+
+        private string GetDynamicWindowTitle()
+        {
+            try
+            {
+                string userName = System.Environment.UserName;
+                bool isAdmin = IsRunningAsAdministrator();
+                string adminText = isAdmin ? "Administrator" : "Standard User";
+                
+                return $"MyTekki Debloat - Professional Windows Optimization ({adminText} - Running for {userName})";
+            }
+            catch
+            {
+                return "MyTekki Debloat - Professional Windows Optimization";
+            }
+        }
+
+        private bool IsRunningAsAdministrator()
+        {
+            try
+            {
+                var identity = System.Security.Principal.WindowsIdentity.GetCurrent();
+                var principal = new System.Security.Principal.WindowsPrincipal(identity);
+                return principal.IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private void CreateMenuBar()
         {
+            // Use standard MenuStrip with manual positioning for MetroForm compatibility
             _menuStrip = new MenuStrip
             {
-                BackColor = Color.FromArgb(30, 30, 30),
+                BackColor = Color.FromArgb(45, 45, 48), // Dark grey background
                 ForeColor = Color.White,
                 Font = new Font("Segoe UI", 9F),
-                Renderer = new ToolStripProfessionalRenderer(new DarkColorTable())
+                Dock = DockStyle.None, // Manual positioning for MetroForm
+                Location = new Point(2, this.HeaderHeight + 1), // Account for MetroForm padding
+                Size = new Size(this.ClientSize.Width - 4, 24), // Use ClientSize and account for padding
+                Anchor = AnchorStyles.None, // Remove anchor, we'll handle manually
+                Renderer = new ToolStripProfessionalRenderer(new DarkMenuColorTable()),
+                ImageScalingSize = new Size(0, 0), // Remove image placeholders
+                ShowItemToolTips = false // Remove tooltips that might cause white boxes
             };
 
             // File Menu
-            var fileMenu = new ToolStripMenuItem("File");
+            var fileMenu = new ToolStripMenuItem("File") 
+            { 
+                ForeColor = Color.White,
+                DisplayStyle = ToolStripItemDisplayStyle.Text // Text only, no images
+            };
             fileMenu.DropDownItems.Add("Export Configuration", null, ExportConfig_Click);
             fileMenu.DropDownItems.Add("Import Configuration", null, ImportConfig_Click);
             fileMenu.DropDownItems.Add(new ToolStripSeparator());
             fileMenu.DropDownItems.Add("Exit", null, (s, e) => Close());
 
             // View Menu  
-            var viewMenu = new ToolStripMenuItem("View");
+            var viewMenu = new ToolStripMenuItem("View") 
+            { 
+                ForeColor = Color.White,
+                DisplayStyle = ToolStripItemDisplayStyle.Text
+            };
             
             // Theme submenu
-            var themeMenu = new ToolStripMenuItem("Theme");
+            var themeMenu = new ToolStripMenuItem("Theme") 
+            { 
+                ForeColor = Color.White,
+                DisplayStyle = ToolStripItemDisplayStyle.Text
+            };
             themeMenu.DropDownItems.Add("Dark Theme", null, (s, e) => SetDarkTheme());
             themeMenu.DropDownItems.Add("Light Theme", null, (s, e) => SetLightTheme());
-            themeMenu.DropDownItems.Add(new ToolStripSeparator());
-            themeMenu.DropDownItems.Add("Blue Accent", null, (s, e) => SetBlueTheme());
-            themeMenu.DropDownItems.Add("Green Accent", null, (s, e) => SetGreenTheme());
-            themeMenu.DropDownItems.Add("Orange Accent", null, (s, e) => SetOrangeTheme());
             
             viewMenu.DropDownItems.Add(themeMenu);
             viewMenu.DropDownItems.Add(new ToolStripSeparator());
             viewMenu.DropDownItems.Add("Refresh Tweaks", null, async (s, e) => await LoadTweaksAsync());
 
             // Tools Menu
-            var toolsMenu = new ToolStripMenuItem("Tools");
+            var toolsMenu = new ToolStripMenuItem("Tools") 
+            { 
+                ForeColor = Color.White,
+                DisplayStyle = ToolStripItemDisplayStyle.Text
+            };
             toolsMenu.DropDownItems.Add("Select All Tweaks", null, SelectAllTweaks_Click);
             toolsMenu.DropDownItems.Add("Deselect All Tweaks", null, DeselectAllTweaks_Click);
             toolsMenu.DropDownItems.Add(new ToolStripSeparator());
             toolsMenu.DropDownItems.Add("System Restore Point", null, CreateRestorePoint_Click);
 
             // Help Menu
-            var helpMenu = new ToolStripMenuItem("Help");
+            var helpMenu = new ToolStripMenuItem("Help") 
+            { 
+                ForeColor = Color.White,
+                DisplayStyle = ToolStripItemDisplayStyle.Text
+            };
             helpMenu.DropDownItems.Add("About", null, About_Click);
             helpMenu.DropDownItems.Add("GitHub Repository", null, GitHub_Click);
             helpMenu.DropDownItems.Add("Chris Titus Tech", null, ChrisTitus_Click);
 
             _menuStrip.Items.AddRange(new ToolStripItem[] { fileMenu, viewMenu, toolsMenu, helpMenu });
+            
+            // Set all dropdown items to text only
+            SetAllMenuItemsTextOnly(_menuStrip);
+            
             Controls.Add(_menuStrip);
+            _menuStrip.BringToFront(); // Ensure menu is at the front
             MainMenuStrip = _menuStrip;
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            
+            // Update menu width when form is resized
+            if (_menuStrip != null)
+            {
+                _menuStrip.Width = this.ClientSize.Width - 4; // Account for MetroForm padding
+                _menuStrip.Location = new Point(2, this.HeaderHeight + 1); // Maintain proper position
+            }
+        }
+
+        private void SetAllMenuItemsTextOnly(MenuStrip menuStrip)
+        {
+            foreach (ToolStripItem item in menuStrip.Items)
+            {
+                if (item is ToolStripMenuItem menuItem)
+                {
+                    SetMenuItemTextOnly(menuItem);
+                }
+            }
+        }
+
+        private void SetMenuItemTextOnly(ToolStripMenuItem menuItem)
+        {
+            menuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            menuItem.Image = null;
+            
+            // Recursively set for all dropdown items
+            foreach (ToolStripItem dropDownItem in menuItem.DropDownItems)
+            {
+                if (dropDownItem is ToolStripMenuItem subMenuItem)
+                {
+                    SetMenuItemTextOnly(subMenuItem);
+                }
+                else if (dropDownItem is ToolStripItem item)
+                {
+                    item.DisplayStyle = ToolStripItemDisplayStyle.Text;
+                    item.Image = null;
+                }
+            }
         }
 
         private void CreateMainControls()
         {
-            // Create main tab control
-            _tabControl = new TabControl
+            // Create main tab control using ReaLTaiizor
+            // Position below the manually positioned menu
+            int menuBottom = this.HeaderHeight + 25; // Header + menu height + small margin
+            
+            _tabControl = new RTControls.MetroTabControl
             {
-                Location = new Point(10, _menuStrip.Height + 10),
-                Size = new Size(ClientSize.Width - 20, ClientSize.Height - _menuStrip.Height - 20),
+                Location = new Point(10, menuBottom),
+                Size = new Size(this.ClientSize.Width - 20, this.ClientSize.Height - menuBottom - 10),
                 Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
-                BackColor = Color.FromArgb(45, 45, 48),
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 10F, FontStyle.Regular),
-                Appearance = TabAppearance.FlatButtons,
-                DrawMode = TabDrawMode.OwnerDrawFixed
+                Font = new Font("Segoe UI", 10F, FontStyle.Regular)
             };
-            _tabControl.DrawItem += TabControl_DrawItem;
 
             CreateMainTweaksTab();
             CreateSystemInfoTab();
@@ -201,7 +334,7 @@ namespace MyTekkiDebloat.WinUI
             };
 
             // Main container using ReaLTaiizor Panel
-            var mainContainer = new RTControls.Panel
+            _mainContainer = new RTControls.Panel
             {
                 Dock = DockStyle.Fill,
                 Padding = new Padding(15),
@@ -209,7 +342,7 @@ namespace MyTekkiDebloat.WinUI
             };
 
             // Top controls panel
-            var topPanel = new RTControls.Panel
+            _topPanel = new RTControls.Panel
             {
                 Height = 80,
                 Dock = DockStyle.Top,
@@ -217,7 +350,7 @@ namespace MyTekkiDebloat.WinUI
             };
 
             // Preset selection dropdown
-            var presetLabel = new Label
+            _presetLabel = new Label
             {
                 Text = "Load Preset:",
                 Location = new Point(0, 10),
@@ -226,13 +359,11 @@ namespace MyTekkiDebloat.WinUI
                 Font = new Font("Segoe UI", 9F)
             };
 
-            _presetComboBox = new ComboBox
+            _presetComboBox = new RTControls.MetroComboBox
             {
                 Location = new Point(85, 8),
                 Size = new Size(200, 25),
                 DropDownStyle = ComboBoxStyle.DropDownList,
-                BackColor = Color.FromArgb(60, 60, 60),
-                ForeColor = Color.White,
                 Font = new Font("Segoe UI", 9F)
             };
             _presetComboBox.Items.AddRange(new[] { 
@@ -244,17 +375,14 @@ namespace MyTekkiDebloat.WinUI
             _presetComboBox.SelectedIndexChanged += PresetComboBox_SelectedIndexChanged;
 
             // Search box
-            _searchBox = new TextBox
+            _searchBox = new RTControls.MetroTextBox
             {
                 Location = new Point(300, 8),
                 Size = new Size(250, 25),
                 Font = new Font("Segoe UI", 9F),
-                BackColor = Color.FromArgb(60, 60, 60),
-                ForeColor = Color.White,
-                BorderStyle = BorderStyle.FixedSingle
+                Text = "Search tweaks..."
             };
-            _searchBox.Text = "Search tweaks...";
-            _searchBox.GotFocus += (s, e) => { if (_searchBox.Text == "Search tweaks...") _searchBox.Clear(); };
+            _searchBox.GotFocus += (s, e) => { if (_searchBox.Text == "Search tweaks...") _searchBox.Text = ""; };
             _searchBox.LostFocus += (s, e) => { if (string.IsNullOrWhiteSpace(_searchBox.Text)) _searchBox.Text = "Search tweaks..."; };
 
             // Buttons
@@ -267,7 +395,7 @@ namespace MyTekkiDebloat.WinUI
             _applySelectedButton.Click += ApplySelectedButton_Click;
             _applySelectedButton.Enabled = false;
 
-            topPanel.Controls.AddRange(new Control[] { presetLabel, _presetComboBox, _searchBox, _scanButton, _applySelectedButton });
+            _topPanel.Controls.AddRange(new Control[] { _presetLabel, _presetComboBox, _searchBox, _scanButton, _applySelectedButton });
 
             // Status panel
             _statusPanel = new RTControls.Panel
@@ -360,11 +488,11 @@ namespace MyTekkiDebloat.WinUI
             // Assign TextChanged event AFTER setting initial text to avoid triggering during initialization
             _searchBox.TextChanged += SearchBox_TextChanged;
 
-            mainContainer.Controls.Add(_mainSplitContainer);
-            mainContainer.Controls.Add(_statusPanel);
-            mainContainer.Controls.Add(topPanel);
+            _mainContainer.Controls.Add(_mainSplitContainer);
+            _mainContainer.Controls.Add(_statusPanel);
+            _mainContainer.Controls.Add(_topPanel);
             
-            mainTab.Controls.Add(mainContainer);
+            mainTab.Controls.Add(_mainContainer);
             _tabControl.TabPages.Add(mainTab);
         }
 
@@ -425,28 +553,6 @@ namespace MyTekkiDebloat.WinUI
                 Font = new Font("Segoe UI", 9F, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
-        }
-
-        // Custom tab drawing
-        private void TabControl_DrawItem(object? sender, DrawItemEventArgs e)
-        {
-            if (sender is not TabControl tabControl) return;
-
-            var tabRect = tabControl.GetTabRect(e.Index);
-            var isSelected = e.Index == tabControl.SelectedIndex;
-            
-            var bgColor = isSelected ? Color.FromArgb(60, 60, 60) : Color.FromArgb(45, 45, 48);
-            var textColor = Color.White;
-
-            using (var bgBrush = new SolidBrush(bgColor))
-            using (var textBrush = new SolidBrush(textColor))
-            {
-                e.Graphics.FillRectangle(bgBrush, tabRect);
-                
-                var textFlags = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter;
-                TextRenderer.DrawText(e.Graphics, tabControl.TabPages[e.Index].Text, 
-                    tabControl.Font, tabRect, textColor, textFlags);
-            }
         }
 
         // Event handlers
@@ -939,12 +1045,90 @@ namespace MyTekkiDebloat.WinUI
         // Theme management using ReaLTaiizor
         private void SetDarkTheme()
         {
+            // Update MetroStyleManager for dark theme (handles title bar automatically)
             _styleManager.Style = ReaLTaiizor.Enum.Metro.Style.Dark;
             
             // Update form colors
             BackColor = Color.FromArgb(45, 45, 48);
             ForeColor = Color.White;
-            _tabControl.BackColor = Color.FromArgb(45, 45, 48);
+            
+            // Update standard MenuStrip for dark theme
+            if (_menuStrip != null)
+            {
+                _menuStrip.BackColor = Color.FromArgb(45, 45, 48);
+                _menuStrip.ForeColor = Color.White;
+                _menuStrip.Renderer = new ToolStripProfessionalRenderer(new DarkMenuColorTable());
+                
+                // Update menu item colors
+                foreach (ToolStripMenuItem item in _menuStrip.Items)
+                {
+                    item.ForeColor = Color.White;
+                    UpdateMenuItemColors(item, Color.White);
+                }
+            }
+            
+            // Update tab pages background for dark theme
+            if (_tabControl != null)
+            {
+                foreach (TabPage tabPage in _tabControl.TabPages)
+                {
+                    tabPage.BackColor = Color.FromArgb(45, 45, 48);
+                    tabPage.ForeColor = Color.White;
+                }
+            }
+            
+            // Update ReaLTaiizor panels for dark theme
+            if (_mainContainer != null)
+            {
+                _mainContainer.BackColor = Color.FromArgb(45, 45, 48);
+            }
+            if (_topPanel != null)
+            {
+                _topPanel.BackColor = Color.FromArgb(45, 45, 48);
+            }
+            if (_statusPanel != null)
+            {
+                _statusPanel.BackColor = Color.FromArgb(60, 60, 60);
+            }
+            
+            // Update main container controls
+            if (_presetLabel != null)
+            {
+                _presetLabel.ForeColor = Color.White;
+            }
+            // ReaLTaiizor controls handle their own theming via StyleManager
+            // _presetComboBox and _searchBox colors managed by ReaLTaiizor
+            if (_statusLabel != null)
+            {
+                _statusLabel.ForeColor = Color.White;
+            }
+            
+            // Update ReaLTaiizor buttons for dark theme
+            if (_scanButton != null)
+            {
+                _scanButton.BackColor = Color.FromArgb(0, 120, 215);
+                _scanButton.ForeColor = Color.White;
+            }
+            if (_applySelectedButton != null)
+            {
+                _applySelectedButton.BackColor = Color.FromArgb(16, 124, 16);
+                _applySelectedButton.ForeColor = Color.White;
+            }
+            
+            if (_leftPanelLabel != null)
+            {
+                _leftPanelLabel.BackColor = Color.FromArgb(35, 35, 38);
+                _leftPanelLabel.ForeColor = Color.White;
+            }
+            if (_rightPanelLabel != null)
+            {
+                _rightPanelLabel.BackColor = Color.FromArgb(35, 35, 38);
+                _rightPanelLabel.ForeColor = Color.White;
+            }
+            if (_mainSplitContainer != null)
+            {
+                _mainSplitContainer.BackColor = Color.FromArgb(45, 45, 48);
+            }
             
             // Update split panel controls
             if (_allTweaksListBox != null)
@@ -959,19 +1143,100 @@ namespace MyTekkiDebloat.WinUI
             }
             
             // Update ReaLTaiizor panel colors
-            _statusPanel.BackColor = Color.FromArgb(60, 60, 60);
+            if (_statusPanel != null)
+            {
+                _statusPanel.BackColor = Color.FromArgb(60, 60, 60);
+            }
             
             Refresh();
         }
 
         private void SetLightTheme()
         {
+            // Update MetroStyleManager for light theme (handles title bar automatically)
             _styleManager.Style = ReaLTaiizor.Enum.Metro.Style.Light;
             
             // Update form colors
             BackColor = Color.White;
             ForeColor = Color.Black;
-            _tabControl.BackColor = Color.White;
+            
+            // Update standard MenuStrip for light theme
+            if (_menuStrip != null)
+            {
+                _menuStrip.BackColor = Color.FromArgb(240, 240, 240);
+                _menuStrip.ForeColor = Color.Black;
+                _menuStrip.Renderer = new ToolStripProfessionalRenderer(new LightMenuColorTable());
+                
+                // Update menu item colors
+                foreach (ToolStripMenuItem item in _menuStrip.Items)
+                {
+                    item.ForeColor = Color.Black;
+                    UpdateMenuItemColors(item, Color.Black);
+                }
+            }
+            
+            // Update tab pages background for light theme
+            if (_tabControl != null)
+            {
+                foreach (TabPage tabPage in _tabControl.TabPages)
+                {
+                    tabPage.BackColor = Color.White;
+                    tabPage.ForeColor = Color.Black;
+                }
+            }
+            
+            // Update ReaLTaiizor panels for light theme
+            if (_mainContainer != null)
+            {
+                _mainContainer.BackColor = Color.White;
+            }
+            if (_topPanel != null)
+            {
+                _topPanel.BackColor = Color.White;
+            }
+            if (_statusPanel != null)
+            {
+                _statusPanel.BackColor = Color.FromArgb(240, 240, 240);
+            }
+            
+            // Update main container controls
+            if (_presetLabel != null)
+            {
+                _presetLabel.ForeColor = Color.Black;
+            }
+            // ReaLTaiizor controls handle their own theming via StyleManager
+            // _presetComboBox and _searchBox colors managed by ReaLTaiizor
+            if (_statusLabel != null)
+            {
+                _statusLabel.ForeColor = Color.Black;
+            }
+            
+            // Update ReaLTaiizor buttons for light theme
+            if (_scanButton != null)
+            {
+                _scanButton.BackColor = Color.FromArgb(0, 120, 215);
+                _scanButton.ForeColor = Color.White;
+            }
+            if (_applySelectedButton != null)
+            {
+                _applySelectedButton.BackColor = Color.FromArgb(16, 124, 16);
+                _applySelectedButton.ForeColor = Color.White;
+            }
+            
+            if (_leftPanelLabel != null)
+            {
+                _leftPanelLabel.BackColor = Color.FromArgb(230, 230, 230);
+                _leftPanelLabel.ForeColor = Color.Black;
+            }
+            if (_rightPanelLabel != null)
+            {
+                _rightPanelLabel.BackColor = Color.FromArgb(230, 230, 230);
+                _rightPanelLabel.ForeColor = Color.Black;
+            }
+            if (_mainSplitContainer != null)
+            {
+                _mainSplitContainer.BackColor = Color.White;
+            }
             
             // Update split panel controls
             if (_allTweaksListBox != null)
@@ -986,26 +1251,11 @@ namespace MyTekkiDebloat.WinUI
             }
             
             // Update ReaLTaiizor panel colors
-            _statusPanel.BackColor = Color.FromArgb(240, 240, 240);
+            if (_statusPanel != null)
+            {
+                _statusPanel.BackColor = Color.FromArgb(240, 240, 240);
+            }
             
-            Refresh();
-        }
-
-        private void SetBlueTheme()
-        {
-            _scanButton.BackColor = Color.FromArgb(0, 120, 215);
-            Refresh();
-        }
-
-        private void SetGreenTheme()
-        {
-            _scanButton.BackColor = Color.FromArgb(16, 124, 16);
-            Refresh();
-        }
-
-        private void SetOrangeTheme()
-        {
-            _scanButton.BackColor = Color.FromArgb(255, 140, 0);
             Refresh();
         }
 
@@ -1054,26 +1304,148 @@ namespace MyTekkiDebloat.WinUI
 
         private void About_Click(object? sender, EventArgs e)
         {
-            var aboutText = @"MyTekki Debloat v1.0
-Professional Windows Optimization
+            ShowThemedAboutDialog();
+        }
 
-Built upon the incredible work of Chris Titus Tech
-Modern .NET interface with ReaLTaiizor components
+        private void ShowThemedAboutDialog()
+        {
+            // Create a themed about dialog using standard Form with dark theming
+            using var aboutForm = new Form
+            {
+                Text = "About MyTekki Debloat",
+                Size = new Size(500, 350),
+                StartPosition = FormStartPosition.CenterParent,
+                FormBorderStyle = FormBorderStyle.None, // Remove title bar
+                MaximizeBox = false,
+                MinimizeBox = false,
+                ShowInTaskbar = false,
+                BackColor = Color.FromArgb(45, 45, 48),
+                ForeColor = Color.White
+            };
 
-© 2025 - MIT License";
+            // Create content panel
+            var contentPanel = new Panel
+            {
+                BackColor = Color.FromArgb(45, 45, 48),
+                Dock = DockStyle.Fill,
+                Padding = new Padding(20),
+                BorderStyle = BorderStyle.FixedSingle // Add subtle border since no title bar
+            };
 
-            MessageBox.Show(aboutText, "About MyTekki Debloat", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            // Make the form draggable by clicking and dragging the content panel
+            bool isDragging = false;
+            Point lastCursor = Point.Empty;
+            Point lastForm = Point.Empty;
+            
+            contentPanel.MouseDown += (s, e) => {
+                isDragging = true;
+                lastCursor = Cursor.Position;
+                lastForm = aboutForm.Location;
+            };
+            
+            contentPanel.MouseMove += (s, e) => {
+                if (isDragging)
+                {
+                    var currentCursor = Cursor.Position;
+                    var offset = new Point(currentCursor.X - lastCursor.X, currentCursor.Y - lastCursor.Y);
+                    aboutForm.Location = new Point(lastForm.X + offset.X, lastForm.Y + offset.Y);
+                }
+            };
+            
+            contentPanel.MouseUp += (s, e) => {
+                isDragging = false;
+            };
+
+            // Title label
+            var titleLabel = new Label
+            {
+                Text = "MyTekki Debloat Utility v1.0",
+                Font = new Font("Segoe UI", 16F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(0, 174, 219), // Metro blue
+                AutoSize = true,
+                Location = new Point(20, 20)
+            };
+
+            // Subtitle label
+            var subtitleLabel = new Label
+            {
+                Text = "Professional Windows Optimization",
+                Font = new Font("Segoe UI", 12F, FontStyle.Regular),
+                ForeColor = Color.White,
+                AutoSize = true,
+                Location = new Point(20, 55)
+            };
+
+            // Description label
+            var descriptionLabel = new Label
+            {
+                Text = "Built to enhance the amazing work done by Chris Titus Tech\nusing Modern .NET and C# with ReaLTaiizor components",
+                Font = new Font("Segoe UI", 10F),
+                ForeColor = Color.FromArgb(200, 200, 200),
+                AutoSize = false,
+                Size = new Size(440, 50),
+                Location = new Point(20, 90)
+            };
+
+            // Special thanks label
+            var thanksLabel = new Label
+            {
+                Text = "💝 Special thanks from the original author (Mike Daniels)\nto his two lovely kids Maksim and Melanie Daniels 💖✨",
+                Font = new Font("Segoe UI", 10F, FontStyle.Italic),
+                ForeColor = Color.FromArgb(255, 182, 193), // Light pink
+                AutoSize = false,
+                Size = new Size(440, 50),
+                Location = new Point(20, 160),
+                TextAlign = ContentAlignment.MiddleCenter
+            };
+
+            // Copyright label
+            var copyrightLabel = new Label
+            {
+                Text = "© 2025 - MIT License",
+                Font = new Font("Segoe UI", 9F),
+                ForeColor = Color.FromArgb(150, 150, 150),
+                AutoSize = true,
+                Location = new Point(20, 250)
+            };
+
+            // OK button - use standard WinForms Button
+            var okButton = new Button
+            {
+                Text = "OK",
+                Size = new Size(80, 30),
+                Location = new Point(400, 290),
+                UseVisualStyleBackColor = false,
+                BackColor = Color.FromArgb(0, 174, 219),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat
+            };
+            okButton.FlatAppearance.BorderSize = 0;
+            okButton.Click += (s, e) => aboutForm.Close();
+
+            // Add controls to content panel
+            contentPanel.Controls.Add(titleLabel);
+            contentPanel.Controls.Add(subtitleLabel);
+            contentPanel.Controls.Add(descriptionLabel);
+            contentPanel.Controls.Add(thanksLabel);
+            contentPanel.Controls.Add(copyrightLabel);
+            contentPanel.Controls.Add(okButton);
+
+            // Add content panel to form
+            aboutForm.Controls.Add(contentPanel);
+
+            // Show dialog
+            aboutForm.ShowDialog(this);
         }
 
         private void GitHub_Click(object? sender, EventArgs e)
         {
-            OpenUrl("https://github.com/ChrisTitusTech/winutil");
+            OpenUrl("https://github.com/xmikedanielsx/MyTekki-Debloat-Utility");
         }
 
         private void ChrisTitus_Click(object? sender, EventArgs e)
         {
-            OpenUrl("https://christitus.com/");
+            OpenUrl("https://github.com/ChrisTitusTech/winutil");
         }
 
         private void OpenUrl(string url)
@@ -1092,6 +1464,24 @@ Modern .NET interface with ReaLTaiizor components
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+
+        // Helper method for updating menu item colors
+        private void UpdateMenuItemColors(ToolStripMenuItem item, Color color)
+        {
+            item.ForeColor = color;
+            foreach (ToolStripItem subItem in item.DropDownItems)
+            {
+                if (subItem is ToolStripMenuItem menuItem)
+                {
+                    UpdateMenuItemColors(menuItem, color);
+                }
+                else
+                {
+                    subItem.ForeColor = color;
+                }
+            }
+        }
+
     }
 
     // Helper class for list items in the main tweaks list
@@ -1117,14 +1507,39 @@ Modern .NET interface with ReaLTaiizor components
         public override string ToString() => DisplayText;
     }
 
-    // Dark theme for menu
-    public class DarkColorTable : ProfessionalColorTable
+    // Custom color table for dark theme menus
+    public class DarkMenuColorTable : ProfessionalColorTable
     {
-        public override Color MenuItemSelected => Color.FromArgb(60, 60, 60);
-        public override Color MenuItemBorder => Color.FromArgb(80, 80, 80);
-        public override Color MenuBorder => Color.FromArgb(80, 80, 80);
-        public override Color MenuItemSelectedGradientBegin => Color.FromArgb(60, 60, 60);
-        public override Color MenuItemSelectedGradientEnd => Color.FromArgb(60, 60, 60);
+        public override Color MenuItemSelected => Color.FromArgb(65, 177, 225);
+        public override Color MenuItemBorder => Color.FromArgb(100, 100, 100);
+        public override Color MenuBorder => Color.FromArgb(100, 100, 100);
+        public override Color MenuItemSelectedGradientBegin => Color.FromArgb(65, 177, 225);
+        public override Color MenuItemSelectedGradientEnd => Color.FromArgb(65, 177, 225);
         public override Color ToolStripDropDownBackground => Color.FromArgb(45, 45, 48);
+        public override Color MenuItemPressedGradientBegin => Color.FromArgb(65, 177, 225);
+        public override Color MenuItemPressedGradientEnd => Color.FromArgb(65, 177, 225);
+        public override Color ImageMarginGradientBegin => Color.FromArgb(45, 45, 48); // Remove image margin
+        public override Color ImageMarginGradientEnd => Color.FromArgb(45, 45, 48); // Remove image margin
+        public override Color ImageMarginGradientMiddle => Color.FromArgb(45, 45, 48); // Remove image margin
+        public override Color MenuStripGradientBegin => Color.FromArgb(45, 45, 48);
+        public override Color MenuStripGradientEnd => Color.FromArgb(45, 45, 48);
+    }
+
+    // Custom color table for light theme menus
+    public class LightMenuColorTable : ProfessionalColorTable
+    {
+        public override Color MenuItemSelected => Color.FromArgb(65, 177, 225);
+        public override Color MenuItemBorder => Color.FromArgb(200, 200, 200);
+        public override Color MenuBorder => Color.FromArgb(200, 200, 200);
+        public override Color MenuItemSelectedGradientBegin => Color.FromArgb(65, 177, 225);
+        public override Color MenuItemSelectedGradientEnd => Color.FromArgb(65, 177, 225);
+        public override Color ToolStripDropDownBackground => Color.FromArgb(240, 240, 240);
+        public override Color MenuItemPressedGradientBegin => Color.FromArgb(65, 177, 225);
+        public override Color MenuItemPressedGradientEnd => Color.FromArgb(65, 177, 225);
+        public override Color ImageMarginGradientBegin => Color.FromArgb(240, 240, 240); // Remove image margin
+        public override Color ImageMarginGradientEnd => Color.FromArgb(240, 240, 240); // Remove image margin
+        public override Color ImageMarginGradientMiddle => Color.FromArgb(240, 240, 240); // Remove image margin
+        public override Color MenuStripGradientBegin => Color.FromArgb(240, 240, 240);
+        public override Color MenuStripGradientEnd => Color.FromArgb(240, 240, 240);
     }
 }
