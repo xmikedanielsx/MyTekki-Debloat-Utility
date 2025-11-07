@@ -1,0 +1,68 @@
+{
+  "Id": "DisableIPv6",
+  "Name": "Disable IPv6",
+  "Description": "Disables IPv6 protocol to potentially improve network performance and reduce attack surface. Based on Chris Titus Tech's network optimization.",
+  "Category": "Performance",
+  "Severity": "Medium",
+  "Tags": ["network", "ipv6", "performance", "security"],
+  "CTTKey": "WPFTweaksDisableipsix",
+  "ApplyOperations": {
+    "RegistryOperations": [
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
+        "ValueName": "DisabledComponents",
+        "Value": 255,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      }
+    ],
+    "ServiceOperations": [],
+    "FileOperations": [],
+    "PowerShellOperations": [
+      {
+        "Operation": "Execute",
+        "Script": "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
+      }
+    ]
+  },
+  "UndoOperations": {
+    "RegistryOperations": [
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
+        "ValueName": "DisabledComponents",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      }
+    ],
+    "ServiceOperations": [],
+    "FileOperations": [],
+    "PowerShellOperations": [
+      {
+        "Operation": "Execute",
+        "Script": "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
+      }
+    ]
+  },
+  "DetectionRules": [
+    {
+      "Type": "Registry",
+      "Hive": "LocalMachine",
+      "KeyPath": "SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
+      "ValueName": "DisabledComponents",
+      "ExpectedValue": 255,
+      "ValueType": "DWord"
+    }
+  ],
+  "Authors": [
+    {
+      "Name": "Chris Titus",
+      "Url": "https://github.com/ChrisTitusTech",
+      "SupportUrl": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/disableipsix",
+      "Type": "Original",
+      "Notes": "Original implementation from Chris Titus Tech's Windows utility for disabling IPv6"
+    }
+  ]
+}

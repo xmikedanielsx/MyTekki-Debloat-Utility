@@ -1,0 +1,159 @@
+{
+  "Id": "DisableConsumerFeatures",
+  "Name": "Disable Consumer Features",
+  "Description": "Disables Windows consumer features that automatically install suggested apps and games. Enhanced implementation that combines Chris Titus Tech's Group Policy approach with additional ContentDeliveryManager settings for comprehensive consumer feature blocking.",
+  "Category": "Privacy",
+  "Severity": "Low",
+  "Tags": ["consumer", "apps", "suggestions", "sponsored"],
+  "CTTKey": "WPFTweaksConsumerFeatures",
+  "ApplyOperations": {
+    "RegistryOperations": [
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "ValueName": "DisableWindowsConsumerFeatures",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "ContentDeliveryAllowed",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "OemPreInstalledAppsEnabled",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "PreInstalledAppsEnabled",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "PreInstalledAppsEverEnabled",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      }
+    ],
+    "ServiceOperations": [],
+    "FileOperations": [],
+    "PowerShellOperations": []
+  },
+  "UndoOperations": {
+    "RegistryOperations": [
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "ValueName": "DisableWindowsConsumerFeatures",
+        "Operation": "DeleteValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "ContentDeliveryAllowed",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "OemPreInstalledAppsEnabled",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "PreInstalledAppsEnabled",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "PreInstalledAppsEverEnabled",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      }
+    ],
+    "ServiceOperations": [],
+    "FileOperations": [],
+    "PowerShellOperations": []
+  },
+  "DetectionRules": [
+    {
+      "Type": "Registry",
+      "Hive": "LocalMachine",
+      "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+      "ValueName": "DisableWindowsConsumerFeatures",
+      "ExpectedValue": 1,
+      "ValueType": "DWord"
+    },
+    {
+      "Type": "Registry",
+      "Hive": "CurrentUser",
+      "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+      "ValueName": "ContentDeliveryAllowed",
+      "ExpectedValue": 0,
+      "ValueType": "DWord"
+    },
+    {
+      "Type": "Registry",
+      "Hive": "CurrentUser",
+      "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+      "ValueName": "OemPreInstalledAppsEnabled",
+      "ExpectedValue": 0,
+      "ValueType": "DWord"
+    },
+    {
+      "Type": "Registry",
+      "Hive": "CurrentUser",
+      "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+      "ValueName": "PreInstalledAppsEnabled",
+      "ExpectedValue": 0,
+      "ValueType": "DWord"
+    },
+    {
+      "Type": "Registry",
+      "Hive": "CurrentUser",
+      "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+      "ValueName": "PreInstalledAppsEverEnabled",
+      "ExpectedValue": 0,
+      "ValueType": "DWord"
+    }
+  ],
+  "Authors": [
+    {
+      "Name": "Chris Titus",
+      "Url": "https://github.com/ChrisTitusTech",
+      "SupportUrl": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/consumerfeatures",
+      "Type": "Original",
+      "Notes": "Original implementation from Chris Titus Tech's Windows utility (WPFTweaksConsumerFeatures) - Group Policy approach"
+    },
+    {
+      "Name": "MyTekki",
+      "Url": "https://mytekki.com",
+      "SupportUrl": "https://mytekki.com",
+      "Type": "Contributor",
+      "Notes": "Enhanced with additional ContentDeliveryManager registry operations for more comprehensive consumer feature blocking"
+    }
+  ]
+}

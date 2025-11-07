@@ -1,0 +1,579 @@
+{
+  "Id": "DisableTelemetry",
+  "Name": "Disable Windows Telemetry",
+  "Description": "Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser.",
+  "Category": "Privacy",
+  "Severity": "Medium",
+  "Tags": ["privacy", "telemetry", "data", "microsoft"],
+  "CTTKey": "WPFTweaksTele",
+  "ApplyOperations": {
+    "RegistryOperations": [
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection",
+        "ValueName": "AllowTelemetry",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "ValueName": "AllowTelemetry",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "ContentDeliveryAllowed",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "OemPreInstalledAppsEnabled",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "PreInstalledAppsEnabled",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "PreInstalledAppsEverEnabled",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "SilentInstalledAppsEnabled",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "SubscribedContent-338387Enabled",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "SubscribedContent-338388Enabled",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "SubscribedContent-338389Enabled",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "SubscribedContent-353698Enabled",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "SystemPaneSuggestionsEnabled",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Siuf\\Rules",
+        "ValueName": "NumberOfSIUFInPeriod",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "ValueName": "DoNotShowFeedbackNotifications",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "ValueName": "DisableTailoredExperiencesWithDiagnosticData",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo",
+        "ValueName": "DisabledByGroupPolicy",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting",
+        "ValueName": "Disabled",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DeliveryOptimization\\Config",
+        "ValueName": "DODownloadMode",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\DeliveryOptimization",
+        "ValueName": "DODownloadMode",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SYSTEM\\CurrentControlSet\\Control\\Remote Assistance",
+        "ValueName": "fAllowToGetHelp",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\OperationStatusManager",
+        "ValueName": "EnthusiastMode",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Feeds",
+        "ValueName": "EnableFeeds",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Feeds",
+        "ValueName": "ShellFeedsTaskbarViewMode",
+        "Value": 2,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+        "ValueName": "HideSCAMeetNow",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\UserProfileEngagement",
+        "ValueName": "ScoobeSystemSettingEnabled",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      }
+    ],
+    "ServiceOperations": [],
+    "FileOperations": [],
+    "PowerShellOperations": [
+      {
+        "Operation": "Execute",
+        "Script": "bcdedit /set `{current`} bootmenupolicy Legacy | Out-Null"
+      }
+    ],
+    "ScheduledTaskOperations": [
+      {
+        "TaskName": "Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser",
+        "Operation": "Disable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Application Experience\\ProgramDataUpdater",
+        "Operation": "Disable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Autochk\\Proxy",
+        "Operation": "Disable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Customer Experience Improvement Program\\Consolidator",
+        "Operation": "Disable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Customer Experience Improvement Program\\UsbCeip",
+        "Operation": "Disable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\DiskDiagnostic\\Microsoft-Windows-DiskDiagnosticDataCollector",
+        "Operation": "Disable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Feedback\\Siuf\\DmClient",
+        "Operation": "Disable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Feedback\\Siuf\\DmClientOnScenarioDownload",
+        "Operation": "Disable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Windows Error Reporting\\QueueReporting",
+        "Operation": "Disable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Application Experience\\MareBackup",
+        "Operation": "Disable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Application Experience\\StartupAppTask",
+        "Operation": "Disable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Application Experience\\PcaPatchDbTask",
+        "Operation": "Disable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Maps\\MapsUpdateTask",
+        "Operation": "Disable"
+      }
+    ]
+  },
+  "UndoOperations": {
+    "RegistryOperations": [
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection",
+        "ValueName": "AllowTelemetry",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "ValueName": "AllowTelemetry",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "ContentDeliveryAllowed",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "OemPreInstalledAppsEnabled",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "PreInstalledAppsEnabled",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "PreInstalledAppsEverEnabled",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "SilentInstalledAppsEnabled",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "SubscribedContent-338387Enabled",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "SubscribedContent-338388Enabled",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "SubscribedContent-338389Enabled",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "SubscribedContent-353698Enabled",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "ValueName": "SystemPaneSuggestionsEnabled",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Siuf\\Rules",
+        "ValueName": "NumberOfSIUFInPeriod",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "ValueName": "DoNotShowFeedbackNotifications",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "ValueName": "DisableTailoredExperiencesWithDiagnosticData",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo",
+        "ValueName": "DisabledByGroupPolicy",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting",
+        "ValueName": "Disabled",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DeliveryOptimization\\Config",
+        "ValueName": "DODownloadMode",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\DeliveryOptimization",
+        "ValueName": "DODownloadMode",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SYSTEM\\CurrentControlSet\\Control\\Remote Assistance",
+        "ValueName": "fAllowToGetHelp",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\OperationStatusManager",
+        "ValueName": "EnthusiastMode",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Feeds",
+        "ValueName": "EnableFeeds",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Feeds",
+        "ValueName": "ShellFeedsTaskbarViewMode",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+        "ValueName": "HideSCAMeetNow",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\UserProfileEngagement",
+        "ValueName": "ScoobeSystemSettingEnabled",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      }
+    ],
+    "ServiceOperations": [],
+    "FileOperations": [],
+    "PowerShellOperations": [],
+    "ScheduledTaskOperations": [
+      {
+        "TaskName": "Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser",
+        "Operation": "Enable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Application Experience\\ProgramDataUpdater",
+        "Operation": "Enable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Autochk\\Proxy",
+        "Operation": "Enable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Customer Experience Improvement Program\\Consolidator",
+        "Operation": "Enable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Customer Experience Improvement Program\\UsbCeip",
+        "Operation": "Enable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\DiskDiagnostic\\Microsoft-Windows-DiskDiagnosticDataCollector",
+        "Operation": "Enable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Feedback\\Siuf\\DmClient",
+        "Operation": "Enable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Feedback\\Siuf\\DmClientOnScenarioDownload",
+        "Operation": "Enable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Windows Error Reporting\\QueueReporting",
+        "Operation": "Enable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Application Experience\\MareBackup",
+        "Operation": "Enable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Application Experience\\StartupAppTask",
+        "Operation": "Enable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Application Experience\\PcaPatchDbTask",
+        "Operation": "Enable"
+      },
+      {
+        "TaskName": "Microsoft\\Windows\\Maps\\MapsUpdateTask",
+        "Operation": "Enable"
+      }
+    ]
+  },
+  "DetectionRules": [
+    {
+      "Type": "Registry",
+      "Hive": "LocalMachine",
+      "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection",
+      "ValueName": "AllowTelemetry",
+      "ExpectedValue": 0,
+      "ValueType": "DWord"
+    },
+    {
+      "Type": "Registry",
+      "Hive": "LocalMachine",
+      "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+      "ValueName": "AllowTelemetry",
+      "ExpectedValue": 0,
+      "ValueType": "DWord"
+    },
+    {
+      "Type": "Registry",
+      "Hive": "LocalMachine",
+      "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+      "ValueName": "DoNotShowFeedbackNotifications",
+      "ExpectedValue": 1,
+      "ValueType": "DWord"
+    }
+  ],
+  "RequiresRestart": false,
+  "Authors": [
+    {
+      "Name": "Chris Titus",
+      "Url": "https://github.com/ChrisTitusTech",
+      "SupportUrl": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/tele",
+      "Type": "Original",
+      "Notes": "Original comprehensive telemetry disabling implementation from Chris Titus Tech's Windows utility"
+    },
+    {
+      "Name": "MyTekki",
+      "Url": "https://mytekki.com",
+      "SupportUrl": "https://mytekki.com",
+      "Type": "Contributor",
+      "Notes": "Updated to match official Chris Titus Tech implementation with full scheduled task operations and comprehensive registry coverage"
+    }
+  ]
+}

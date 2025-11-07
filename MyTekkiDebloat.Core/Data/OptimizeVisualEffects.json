@@ -1,0 +1,298 @@
+{
+  "Id": "OptimizeVisualEffects",
+  "Name": "Set Display for Performance",
+  "Description": "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well.",
+  "Category": "z__Advanced Tweaks - CAUTION",
+  "Severity": "Low",
+  "Tags": ["performance", "visual", "effects", "animations"],
+  "CTTKey": "WPFTweaksDisplay",
+  "ApplyOperations": {
+    "RegistryOperations": [
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Control Panel\\Desktop",
+        "ValueName": "DragFullWindows",
+        "Value": "0",
+        "ValueType": "String",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Control Panel\\Desktop",
+        "ValueName": "MenuShowDelay",
+        "Value": "200",
+        "ValueType": "String",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Control Panel\\Desktop\\WindowMetrics",
+        "ValueName": "MinAnimate",
+        "Value": "0",
+        "ValueType": "String",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Control Panel\\Keyboard",
+        "ValueName": "KeyboardDelay",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "ValueName": "ListviewAlphaSelect",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "ValueName": "ListviewShadow",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "ValueName": "TaskbarAnimations",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects",
+        "ValueName": "VisualFXSetting",
+        "Value": 3,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\DWM",
+        "ValueName": "EnableAeroPeek",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "ValueName": "TaskbarMn",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "ValueName": "TaskbarDa",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "ValueName": "ShowTaskViewButton",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "ValueName": "SearchboxTaskbarMode",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Control Panel\\Desktop",
+        "ValueName": "UserPreferencesMask",
+        "Value": [144, 18, 3, 128, 16, 0, 0, 0],
+        "ValueType": "Binary",
+        "Operation": "SetValue"
+      }
+    ],
+    "ServiceOperations": [],
+    "FileOperations": [],
+    "PowerShellOperations": []
+  },
+  "UndoOperations": {
+    "RegistryOperations": [
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Control Panel\\Desktop",
+        "ValueName": "DragFullWindows",
+        "Value": "1",
+        "ValueType": "String",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Control Panel\\Desktop",
+        "ValueName": "MenuShowDelay",
+        "Value": "400",
+        "ValueType": "String",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Control Panel\\Desktop\\WindowMetrics",
+        "ValueName": "MinAnimate",
+        "Value": "1",
+        "ValueType": "String",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Control Panel\\Keyboard",
+        "ValueName": "KeyboardDelay",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "ValueName": "ListviewAlphaSelect",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "ValueName": "ListviewShadow",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "ValueName": "TaskbarAnimations",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects",
+        "ValueName": "VisualFXSetting",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\DWM",
+        "ValueName": "EnableAeroPeek",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "ValueName": "TaskbarMn",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "ValueName": "TaskbarDa",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "ValueName": "ShowTaskViewButton",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "ValueName": "SearchboxTaskbarMode",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      }
+    ],
+    "ServiceOperations": [],
+    "FileOperations": [],
+    "PowerShellOperations": []
+  },
+  "DetectionRules": [
+    {
+      "Type": "Registry",
+      "Hive": "CurrentUser",
+      "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects",
+      "ValueName": "VisualFXSetting",
+      "ExpectedValue": 3,
+      "ValueType": "DWord"
+    },
+    {
+      "Type": "Registry",
+      "Hive": "CurrentUser",
+      "KeyPath": "Control Panel\\Desktop",
+      "ValueName": "DragFullWindows",
+      "ExpectedValue": "0",
+      "ValueType": "String"
+    },
+    {
+      "Type": "Registry",
+      "Hive": "CurrentUser",
+      "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+      "ValueName": "ListviewAlphaSelect",
+      "ExpectedValue": 0,
+      "ValueType": "DWord"
+    },
+    {
+      "Type": "Registry",
+      "Hive": "CurrentUser",
+      "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+      "ValueName": "TaskbarAnimations",
+      "ExpectedValue": 0,
+      "ValueType": "DWord"
+    },
+    {
+      "Type": "Registry",
+      "Hive": "CurrentUser",
+      "KeyPath": "Software\\Microsoft\\Windows\\DWM",
+      "ValueName": "EnableAeroPeek",
+      "ExpectedValue": 0,
+      "ValueType": "DWord"
+    },
+    {
+      "Type": "Registry",
+      "Hive": "CurrentUser",
+      "KeyPath": "Control Panel\\Desktop",
+      "ValueName": "UserPreferencesMask",
+      "ExpectedValue": [144, 18, 3, 128, 16, 0, 0, 0],
+      "ValueType": "Binary"
+    }
+  ],
+  "Authors": [
+    {
+      "Name": "Chris Titus",
+      "Url": "https://github.com/ChrisTitusTech",
+      "SupportUrl": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/display/#set-display-for-performance",
+      "Type": "Original",
+      "Notes": "Original implementation from Chris Titus Tech's Windows utility (WPFTweaksDisplay) for optimizing visual effects for performance"
+    }
+  ]
+}

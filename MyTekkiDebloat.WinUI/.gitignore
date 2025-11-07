@@ -1,0 +1,34 @@
+# WinForms/WinUI specific ignores
+
+# Build folders
+bin/
+obj/
+
+# Designer and layout caches
+*.resources
+*.resx
+*.Designer.cs
+
+# App packaging
+AppPackages/
+BundleArtifacts/
+Appx/
+*.appx
+*.appxbundle
+*.appxupload
+
+# Local cache files
+*.db
+*.sqlite
+
+# Temporary UI test logs
+UITestLogs/
+*.tlog
+*.lastbuildstate
+
+# Windows-specific debug files
+*.pidb
+*.mdb
+*.ilk
+*.idb
+*.ipch

@@ -1,0 +1,81 @@
+{
+  "Id": "DisableBackgroundApps",
+  "Name": "Disable Background Apps",
+  "Description": "Disables background apps from running when not in use, improving system performance and battery life.",
+  "Category": "Performance",
+  "Severity": "Medium",
+  "Tags": ["performance", "background", "apps", "battery"],
+  "CTTKey": "WPFTweaksDisableBGapps",
+  "ApplyOperations": {
+    "RegistryOperations": [
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications",
+        "ValueName": "GlobalUserDisabled",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\AppPrivacy",
+        "ValueName": "LetAppsRunInBackground",
+        "Value": 2,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      }
+    ],
+    "ServiceOperations": [],
+    "FileOperations": [],
+    "PowerShellOperations": []
+  },
+  "UndoOperations": {
+    "RegistryOperations": [
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications",
+        "ValueName": "GlobalUserDisabled",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\AppPrivacy",
+        "ValueName": "LetAppsRunInBackground",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      }
+    ],
+    "ServiceOperations": [],
+    "FileOperations": [],
+    "PowerShellOperations": []
+  },
+  "DetectionRules": [
+    {
+      "Type": "Registry",
+      "Hive": "CurrentUser",
+      "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications",
+      "ValueName": "GlobalUserDisabled",
+      "ExpectedValue": 1,
+      "ValueType": "DWord"
+    }
+  ],
+  "Authors": [
+    {
+      "Name": "Chris Titus",
+      "Url": "https://github.com/ChrisTitusTech",
+      "SupportUrl": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/backgroundapps",
+      "Type": "Original",
+      "Notes": "Original implementation from Chris Titus Tech's Windows utility"
+    },
+    {
+      "Name": "MyTekki",
+      "Url": "https://mytekki.com",
+      "SupportUrl": "https://mytekki.com",
+      "Type": "Contributor", 
+      "Notes": "Enhanced with additional AppPrivacy policy registry operation for more comprehensive background app blocking"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+# Core project-specific ignores
+
+# Build outputs (redundant but localized for safety)
+bin/
+obj/
+
+# XML documentation
+*.xml
+
+# Coverage and analysis
+coverage*/
+*.coverage
+*.coveragexml
+TestResults/
+
+# Generated code
+GeneratedCode/
+*.g.cs
+*.designer.cs
+
+# NuGet local packages
+.nuget/

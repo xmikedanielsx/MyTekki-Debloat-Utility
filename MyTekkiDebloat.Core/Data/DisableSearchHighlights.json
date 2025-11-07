@@ -1,0 +1,106 @@
+{
+  "Id": "DisableSearchHighlights",
+  "Name": "Disable Search Highlights",
+  "Description": "Disables Windows Search highlights and suggestions in the taskbar search, reducing distractions and improving privacy.",
+  "Category": "Privacy",
+  "Severity": "Low",
+  "Tags": ["search", "taskbar", "highlights", "suggestions"],
+  "CTTKey": "",
+  "ApplyOperations": {
+    "RegistryOperations": [
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\SearchSettings",
+        "ValueName": "IsDynamicSearchBoxEnabled",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search",
+        "ValueName": "EnableDynamicContentInWSB",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\SearchSettings",
+        "ValueName": "SafeSearchMode",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      }
+    ],
+    "ServiceOperations": [],
+    "FileOperations": [],
+    "PowerShellOperations": []
+  },
+  "UndoOperations": {
+    "RegistryOperations": [
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\SearchSettings",
+        "ValueName": "IsDynamicSearchBoxEnabled",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search",
+        "ValueName": "EnableDynamicContentInWSB",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\SearchSettings",
+        "ValueName": "SafeSearchMode",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      }
+    ],
+    "ServiceOperations": [],
+    "FileOperations": [],
+    "PowerShellOperations": []
+  },
+  "DetectionRules": [
+    {
+      "Type": "Registry",
+      "Hive": "CurrentUser",
+      "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\SearchSettings",
+      "ValueName": "IsDynamicSearchBoxEnabled",
+      "ExpectedValue": 0,
+      "ValueType": "DWord"
+    },
+    {
+      "Type": "Registry",
+      "Hive": "LocalMachine",
+      "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search",
+      "ValueName": "EnableDynamicContentInWSB",
+      "ExpectedValue": 0,
+      "ValueType": "DWord"
+    },
+    {
+      "Type": "Registry",
+      "Hive": "CurrentUser",
+      "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\SearchSettings",
+      "ValueName": "SafeSearchMode",
+      "ExpectedValue": 0,
+      "ValueType": "DWord"
+    }
+  ],
+  "Authors": [
+    {
+      "Name": "MyTekki", 
+      "Url": "https://mytekki.com",
+      "SupportUrl": "https://mytekki.com",
+      "Type": "Original",
+      "Notes": "Custom implementation for Windows Search highlights disable - disables taskbar search suggestions for privacy"
+    }
+  ]
+}

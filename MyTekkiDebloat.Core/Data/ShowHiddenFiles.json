@@ -1,0 +1,68 @@
+{
+  "Id": "ShowHiddenFiles",
+  "Name": "Show Hidden Files",
+  "Description": "Shows hidden files and folders in Windows Explorer, providing better visibility into system files and potential malware.",
+  "Category": "System",
+  "Severity": "Low",
+  "Tags": ["explorer", "hidden", "files", "security"],
+  "CTTKey": "WPFToggleHiddenFiles",
+  "ApplyOperations": {
+    "RegistryOperations": [
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "ValueName": "Hidden",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      }
+    ],
+    "ServiceOperations": [],
+    "FileOperations": [],
+    "PowerShellOperations": [
+      {
+        "Operation": "Execute",
+        "Script": "Stop-Process -Name explorer -Force; Start-Sleep -Seconds 2; Start-Process explorer"
+      }
+    ]
+  },
+  "UndoOperations": {
+    "RegistryOperations": [
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "ValueName": "Hidden",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      }
+    ],
+    "ServiceOperations": [],
+    "FileOperations": [],
+    "PowerShellOperations": [
+      {
+        "Operation": "Execute",
+        "Script": "Stop-Process -Name explorer -Force; Start-Sleep -Seconds 2; Start-Process explorer"
+      }
+    ]
+  },
+  "DetectionRules": [
+    {
+      "Type": "Registry",
+      "Hive": "CurrentUser", 
+      "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+      "ValueName": "Hidden",
+      "ExpectedValue": 1,
+      "ValueType": "DWord"
+    }
+  ],
+  "Authors": [
+    {
+      "Name": "Chris Titus",
+      "Url": "https://github.com/ChrisTitusTech",
+      "SupportUrl": "https://winutil.christitus.com/dev/tweaks/customize-preferences/hiddenfiles/",
+      "Type": "Original",
+      "Notes": "Original implementation from Chris Titus Tech's Windows utility for showing hidden files and folders in Explorer"
+    }
+  ]
+}

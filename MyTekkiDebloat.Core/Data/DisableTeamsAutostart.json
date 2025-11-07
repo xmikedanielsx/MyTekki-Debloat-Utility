@@ -1,0 +1,106 @@
+{
+  "Id": "DisableTeamsAutostart",
+  "Name": "Disable Teams Auto-start",
+  "Description": "Prevents Microsoft Teams from automatically starting with Windows, improving boot time and system performance.",
+  "Category": "Performance",
+  "Severity": "Low",
+  "Tags": ["teams", "autostart", "boot", "performance"],
+  "CTTKey": "",
+  "ApplyOperations": {
+    "RegistryOperations": [
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Communications",
+        "ValueName": "ConfigureChatAutoInstall",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Chat",
+        "ValueName": "ChatIcon",
+        "Value": 2,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "ValueName": "TaskbarMn",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      }
+    ],
+    "ServiceOperations": [],
+    "FileOperations": [],
+    "PowerShellOperations": []
+  },
+  "UndoOperations": {
+    "RegistryOperations": [
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Communications",
+        "ValueName": "ConfigureChatAutoInstall",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "LocalMachine",
+        "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Chat",
+        "ValueName": "ChatIcon",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "ValueName": "TaskbarMn",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      }
+    ],
+    "ServiceOperations": [],
+    "FileOperations": [],
+    "PowerShellOperations": []
+  },
+  "DetectionRules": [
+    {
+      "Type": "Registry",
+      "Hive": "LocalMachine",
+      "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Communications",
+      "ValueName": "ConfigureChatAutoInstall",
+      "ExpectedValue": 0,
+      "ValueType": "DWord"
+    },
+    {
+      "Type": "Registry",
+      "Hive": "LocalMachine",
+      "KeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Chat",
+      "ValueName": "ChatIcon",
+      "ExpectedValue": 2,
+      "ValueType": "DWord"
+    },
+    {
+      "Type": "Registry",
+      "Hive": "CurrentUser",
+      "KeyPath": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+      "ValueName": "TaskbarMn",
+      "ExpectedValue": 0,
+      "ValueType": "DWord"
+    }
+  ],
+  "Authors": [
+    {
+      "Name": "MyTekki",
+      "Url": "https://mytekki.com",
+      "SupportUrl": "https://mytekki.com", 
+      "Type": "Original",
+      "Notes": "Custom implementation for Microsoft Teams auto-start disable - prevents Teams from auto-starting with Windows"
+    }
+  ]
+}

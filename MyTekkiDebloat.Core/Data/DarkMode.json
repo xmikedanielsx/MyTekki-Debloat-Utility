@@ -1,0 +1,102 @@
+{
+  "Id": "DarkMode",
+  "Name": "Enable Dark Mode",
+  "Description": "Enables system-wide dark mode for modern appearance",
+  "Category": "Appearance",
+  "Severity": "Low",
+  "Tags": ["appearance", "theme", "dark", "ui"],
+  "CTTKey": "WPFToggleDarkMode",
+  "ApplyOperations": {
+    "RegistryOperations": [
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "ValueName": "AppsUseLightTheme",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser", 
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "ValueName": "SystemUsesLightTheme",
+        "Value": 0,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      }
+    ],
+    "ServiceOperations": [],
+    "FileOperations": [],
+    "PowerShellOperations": [
+      {
+        "Operation": "Execute",
+        "Command": "Stop-Process -Name explorer -Force; Start-Sleep -Seconds 2; Start-Process explorer",
+        "AsAdministrator": false
+      }
+    ]
+  },
+  "UndoOperations": {
+    "RegistryOperations": [
+      {
+        "Hive": "CurrentUser",
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "ValueName": "AppsUseLightTheme",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      },
+      {
+        "Hive": "CurrentUser", 
+        "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "ValueName": "SystemUsesLightTheme",
+        "Value": 1,
+        "ValueType": "DWord",
+        "Operation": "SetValue"
+      }
+    ],
+    "ServiceOperations": [],
+    "FileOperations": [],
+    "PowerShellOperations": [
+      {
+        "Operation": "Execute",
+        "Command": "Stop-Process -Name explorer -Force; Start-Sleep -Seconds 2; Start-Process explorer",
+        "AsAdministrator": false
+      }
+    ]
+  },
+  "DetectionRules": [
+    {
+      "Type": "Registry",
+      "Hive": "CurrentUser",
+      "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+      "ValueName": "AppsUseLightTheme", 
+      "ExpectedValue": 0,
+      "ValueType": "DWord"
+    },
+    {
+      "Type": "Registry",
+      "Hive": "CurrentUser",
+      "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", 
+      "ValueName": "SystemUsesLightTheme",
+      "ExpectedValue": 0,
+      "ValueType": "DWord"
+    }
+  ],
+  "RequiresRestart": false,
+  "Authors": [
+    {
+      "Name": "Chris Titus",
+      "Url": "https://github.com/ChrisTitusTech",
+      "SupportUrl": "https://winutil.christitus.com/dev/tweaks/customize-preferences/darkmode",
+      "Type": "Original",
+      "Notes": "Original implementation from Chris Titus Tech's Windows utility"
+    },
+    {
+      "Name": "MyTekki",
+      "Url": "https://mytekki.com",
+      "SupportUrl": "https://mytekki.com",
+      "Type": "Contributor",
+      "Notes": "Enhanced with PowerShell script for immediate theme refresh using standard Windows commands"
+    }
+  ]
+}
