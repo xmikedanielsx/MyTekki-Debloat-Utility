@@ -8,7 +8,8 @@
 
   <ItemGroup>
     <!-- Embed JSON files as resources for NuGet package -->
-    <EmbeddedResource Include="Data\**\*.json" />
+    <EmbeddedResource Include="Data\*.json" />
+    <None Include="Data\*.json" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
 </Project>

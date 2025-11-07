@@ -49,7 +49,7 @@ namespace MyTekkiDebloat.Core.Services
             };
 
             // If no detection rules are defined, fall back to basic operation analysis
-            if (tweak.DetectionRules == null || !tweak.DetectionRules.Rules.Any())
+            if (tweak.DetectionRules == null || !tweak.DetectionRules.Any())
             {
                 return await FallbackToOperationAnalysis(tweak, status);
             }
@@ -60,33 +60,34 @@ namespace MyTekkiDebloat.Core.Services
             }
             catch (Exception ex)
             {
-                // Use fallback behavior from JSON
-                var fallback = tweak.DetectionRules.FallbackBehavior;
-                status.IsApplied = fallback.IsApplied;
+                // Simple fallback
+                status.IsApplied = false;
                 status.CanDetect = false;
-                status.DetectionConfidence = fallback.Confidence;
-                status.StatusMessage = $"{fallback.Message}: {ex.Message}";
+                status.DetectionConfidence = 0.0;
+                status.StatusMessage = $"Detection failed: {ex.Message}";
                 return status;
             }
         }
 
-        private async Task<TweakStatus> ExecuteDetectionRules(DetectionRules rules, TweakStatus status)
+        private async Task<TweakStatus> ExecuteDetectionRules(List<DetectionRule> rules, TweakStatus status)
         {
             var ruleResults = new List<(bool success, double confidence, string message)>();
 
-            foreach (var rule in rules.Rules)
+            foreach (var rule in rules)
             {
                 var result = await ExecuteDetectionRule(rule);
                 ruleResults.Add(result);
             }
 
-            // Combine results based on logic
-            var combinedResult = CombineRuleResults(ruleResults, rules.Logic, rules.CustomLogic);
+            // Simple ALL logic - all rules must pass
+            bool allSuccessful = ruleResults.All(r => r.success);
+            double avgConfidence = ruleResults.Any() ? ruleResults.Average(r => r.confidence) : 0.0;
+            string combinedMessage = string.Join("; ", ruleResults.Select(r => r.message));
             
-            status.IsApplied = combinedResult.success;
+            status.IsApplied = allSuccessful;
             status.CanDetect = true;
-            status.DetectionConfidence = combinedResult.confidence;
-            status.StatusMessage = combinedResult.message;
+            status.DetectionConfidence = avgConfidence;
+            status.StatusMessage = combinedMessage;
 
             return status;
         }
@@ -95,10 +96,14 @@ namespace MyTekkiDebloat.Core.Services
         {
             return rule.Type.ToLower() switch
             {
+                "registry" => await ExecuteRegistryValueRule(rule), // Your JSON uses "Registry"
                 "registryvalue" => await ExecuteRegistryValueRule(rule),
                 "registrykey" => await ExecuteRegistryKeyRule(rule),
+                "service" => await ExecuteServiceRule(rule), // Your JSON might use "Service"
                 "servicestate" => await ExecuteServiceRule(rule),
+                "file" => await ExecuteFileRule(rule), // Your JSON might use "File"
                 "fileexists" => await ExecuteFileRule(rule),
+                "powershell" => await ExecutePowerShellRule(rule), // Your JSON might use "PowerShell"
                 "powershellscript" => await ExecutePowerShellRule(rule),
                 _ => (false, 0.0, $"Unknown rule type: {rule.Type}")
             };

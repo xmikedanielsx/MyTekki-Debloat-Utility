@@ -87,20 +87,47 @@ namespace MyTekkiDebloat.Core.Services
             _cachedTweaks = new List<Tweak>();
             var assembly = Assembly.GetExecutingAssembly();
             
+            // Debug: Print all manifest resource names first
+            var allResources = assembly.GetManifestResourceNames();
+            var logPath = Path.Combine(Path.GetTempPath(), "MyTekkiDebloat_EmbeddedResources.log");
+            var logMessages = new List<string>
+            {
+                $"Assembly: {assembly.FullName}",
+                $"Total embedded resources: {allResources.Length}",
+                "All embedded resources:"
+            };
+            
+            foreach (var resource in allResources)
+            {
+                logMessages.Add($"  - {resource}");
+            }
+            
             // Get all embedded JSON resources from the Data folder
-            var resourceNames = assembly.GetManifestResourceNames()
+            var resourceNames = allResources
                 .Where(name => name.Contains(".Data.") && name.EndsWith(".json"))
                 .ToList();
+
+            logMessages.Add($"Found {resourceNames.Count} JSON resources matching pattern:");
+            foreach (var name in resourceNames)
+            {
+                logMessages.Add($"  - {name}");
+            }
 
             foreach (var resourceName in resourceNames)
             {
                 try
                 {
                     using var stream = assembly.GetManifestResourceStream(resourceName);
-                    if (stream == null) continue;
+                    if (stream == null) 
+                    {
+                        logMessages.Add($"Stream is null for resource: {resourceName}");
+                        continue;
+                    }
 
                     using var reader = new StreamReader(stream);
                     var jsonContent = await reader.ReadToEndAsync();
+                    
+                    logMessages.Add($"Read {jsonContent.Length} characters from {resourceName}");
                     
                     // Try to deserialize as single tweak (new format)
                     try
@@ -109,11 +136,17 @@ namespace MyTekkiDebloat.Core.Services
                         if (singleTweak != null && !string.IsNullOrWhiteSpace(singleTweak.Id))
                         {
                             _cachedTweaks.Add(singleTweak);
+                            logMessages.Add($"Successfully loaded single tweak: {singleTweak.Id} - {singleTweak.Name}");
                             continue; // Successfully loaded as single tweak
                         }
+                        else
+                        {
+                            logMessages.Add($"Single tweak deserialization returned null or invalid tweak for {resourceName}");
+                        }
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        logMessages.Add($"Single tweak deserialization failed for {resourceName}: {ex.Message}");
                         // Not a single tweak, try as array (old format compatibility)
                     }
                     
@@ -128,24 +161,44 @@ namespace MyTekkiDebloat.Core.Services
                                 if (tweak != null && !string.IsNullOrWhiteSpace(tweak.Id))
                                 {
                                     _cachedTweaks.Add(tweak);
+                                    logMessages.Add($"Successfully loaded array tweak: {tweak.Id} - {tweak.Name}");
                                 }
                             }
+                        }
+                        else
+                        {
+                            logMessages.Add($"Array deserialization returned null for {resourceName}");
                         }
                     }
                     catch (Exception ex)
                     {
+                        logMessages.Add($"Array deserialization failed for {resourceName}: {ex.Message}");
                         // Log error but continue loading other resources
-                        Console.WriteLine($"Error loading tweaks from embedded resource {resourceName}: {ex.Message}");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error accessing embedded resource {resourceName}: {ex.Message}");
+                    logMessages.Add($"Error accessing embedded resource {resourceName}: {ex.Message}");
                 }
             }
 
-            // Debug: uncomment below to see loaded tweaks
-            // Console.WriteLine($"Loaded {_cachedTweaks.Count} tweaks from {resourceNames.Count} embedded resources");
+            logMessages.Add($"Total loaded tweaks: {_cachedTweaks.Count}");
+            
+            // Write debug log to temp file
+            try
+            {
+                await File.WriteAllLinesAsync(logPath, logMessages);
+            }
+            catch 
+            {
+                // Ignore file write errors
+            }
+            
+            // Also print to console
+            foreach (var message in logMessages.TakeLast(5)) // Last few messages
+            {
+                Console.WriteLine(message);
+            }
         }
 
         /// <summary>

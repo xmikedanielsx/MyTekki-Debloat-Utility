@@ -120,7 +120,7 @@ namespace MyTekkiDebloat.Core.Models
         /// <summary>
         /// Detection rules for determining if this tweak is currently applied
         /// </summary>
-        public DetectionRules? DetectionRules { get; set; }
+        public List<DetectionRule>? DetectionRules { get; set; }
     }
 
     public enum TweakSeverity
