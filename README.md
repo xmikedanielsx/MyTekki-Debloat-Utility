@@ -168,21 +168,15 @@ MyTekkiDebloat.sln
 | **UI Framework** | ✅ Complete | - | ReaLTaiizor |
 | **Core Library** | ✅ Complete | - | Full API |
 
-### **🎯 Featured Tweaks Categories**
+### **🎯 Available Tweaks & Features**
 
-**🔒 Privacy & Security (6 tweaks)**
-- Disable Activity History, Consumer Features, Location Tracking
-- Block Advertising ID, Disable Telemetry, Remove Cortana
+For complete details on all available tweaks, implementation status, and technical specifications, please see our comprehensive **[Tweaks Documentation](TweaksAvail.md)**.
 
-**⚡ Performance Optimization (8 tweaks)** 
-- Background Apps, Game DVR, Fast Startup, IPv6 Protocol
-- Hibernation Management, Visual Effects, News Widget
-
-**🎨 Appearance & Interface (4 tweaks)**
-- Dark Mode, File Extensions, Hidden Files, Search Highlights  
-
-**🔧 System Behavior (2 tweaks)**
-- Detailed BSOD, End Task on Taskbar, Teams Auto-start
+**Quick Overview:**
+- **20+ Implemented Tweaks** - Ready to use optimizations
+- **46+ Planned Tweaks** - From Chris Titus Tech's proven library  
+- **Multiple Categories** - Privacy, Performance, Appearance, System
+- **Full Traceability** - Every tweak mapped to original CTT implementation
 
 ---
 
@@ -325,36 +319,7 @@ MyTekkiDebloat includes **20 implemented tweaks** with **46 additional tweaks** 
 
 All tweaks include proper attribution, verified mappings to Chris Titus Tech's original implementations, and comprehensive safety validation.
 
----
-
-## 🏗️ **Architecture Overview**
-
-
-#### **🔒 Privacy & Security (8 tweaks)**
-- Activity History, Consumer Features, Location Tracking, Telemetry *(CTT)*
-- Advertising ID, Cortana *(MyTekki Custom)*
-
-#### **⚡ Performance (6 tweaks)**  
-- Background Apps, Game DVR, Hibernation, Visual Effects *(CTT)*
-- Fast Startup, IPv6 *(MyTekki Custom)*
-
-#### **🎨 UI/Appearance (6 tweaks)**
-- Dark Mode, File Extensions, Hidden Files *(CTT)*
-- News & Interests, Search Highlights, Teams Autostart *(MyTekki Custom)*
-
-### **� High Priority Development Queue**
-
-**Next 10 Tweaks In Review:**
-1. **NumLock on Startup** - Simple registry tweak, high demand
-2. **Bing Search in Start Menu** - Privacy-focused enhancement  
-3. **Remove Settings Home Page** - UI cleanup
-4. **Disable Notifications** - Interface enhancement
-5. **Classic Right-Click Menu** - Popular UI improvement
-6. **Remove Explorer Home/Gallery** - Explorer enhancements
-7. **Disable Copilot** - Privacy hardening
-8. **Disable Recall** - Privacy hardening  
-9. **Network Optimizations** - IPv4/6, WiFi, Teredo (In Progress)
-10. **Service Management** - Performance optimization
+For detailed information about all available tweaks and development priorities, see [TweaksAvail.md](TweaksAvail.md).
 
 ---
 
@@ -378,48 +343,22 @@ MyTekkiDebloat.UI (Reference Implementation)
 
 ---
 
-## 🚀 **Advanced Examples**
+## 🏗️ **Architecture Overview**
 
-### **Custom Tweak Creation**
-
-```csharp
-var customTweak = new Tweak
-{
-    Id = "MyCustomTweak",
-    Name = "My Custom Optimization",
-    Description = "Does something amazing",
-    Category = "Custom",
-    Severity = TweakSeverity.Low,
-    RegistryOperations = new[]
-    {
-        new RegistryOperation
-        {
-            Hive = RegistryHive.LocalMachine,
-            KeyPath = @"SOFTWARE\MyApp\Settings",
-            ValueName = "OptimizationLevel",
-            Value = 1,
-            ValueType = RegistryValueKind.DWord,
-            Operation = RegistryOperationType.SetValue
-        }
-    }
-};
-
-// Apply your custom tweak
-var result = await debloater.TweakExecutor.ApplyTweakAsync(customTweak);
 ```
+MyTekkiDebloat.Core (NuGet Package)
+├── 🔧 TweakEngine       # Core tweak application logic
+├── 🔍 SystemDetector    # Real-time system state detection  
+├── 📦 WinGetService     # Software installation management
+├── 🗂️ RepositoryManager # Multi-repo support
+├── ⚙️ ConfigService     # Profile and settings management
+└── 📊 ReportingService  # Operation tracking and analytics
 
-### **Repository Management**
-
-```csharp
-// Add a custom repository
-var customRepo = new CustomRepository("https://mycompany.com/tweaks.json");
-await debloater.RepositoryManager.AddRepositoryAsync(customRepo);
-
-// Search across all repositories  
-var searchResults = await debloater.RepositoryManager.SearchSoftwareAsync("visual studio");
-
-// Install from specific repository
-await debloater.WinGetService.InstallAsync("Microsoft.VisualStudio.2022.Community");
+MyTekkiDebloat.UI (Reference Implementation)  
+├── 🎨 ReaLTaiizor       # Modern UI components
+├── 📱 Responsive Design # Adaptive interface
+├── 🔄 Real-time Updates # Live system state reflection
+└── 🎯 User Experience   # Intuitive operation flow
 ```
 
 ---
