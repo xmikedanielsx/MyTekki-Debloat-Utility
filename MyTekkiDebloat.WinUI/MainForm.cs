@@ -4,6 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Management;
+using System.Diagnostics;
+using System.IO;
+using Microsoft.Win32;
 using MyTekkiDebloat.Core.Interfaces;
 using MyTekkiDebloat.Core.Models;
 using MyTekkiDebloat.Core.Services;
@@ -504,18 +508,391 @@ namespace MyTekkiDebloat.WinUI
                 ForeColor = Color.White
             };
 
-            var infoLabel = new Label
+            // Create the main container for system info
+            var infoContainer = new RTControls.Panel
             {
-                Location = new Point(20, 20),
-                Size = new Size(400, 30),
-                Text = "System Information and Diagnostics - Coming Soon!",
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 12F, FontStyle.Bold),
-                BackColor = Color.Transparent
+                Dock = DockStyle.Fill,
+                BackColor = Color.FromArgb(45, 45, 48),
+                Padding = new Padding(10)
             };
-            
-            infoTab.Controls.Add(infoLabel);
+
+            // Title
+            var titleLabel = new Label
+            {
+                Text = "💻 System Information & Hardware Details",
+                Font = new Font("Segoe UI", 14F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(0, 174, 219),
+                AutoSize = true,
+                Location = new Point(10, 10)
+            };
+            infoContainer.Controls.Add(titleLabel);
+
+            // Create CPU-Z style sub-tabs using MetroTabControl
+            var systemTabControl = new RTControls.MetroTabControl
+            {
+                Location = new Point(10, 45),
+                Size = new Size(800, 500),
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
+                Style = ReaLTaiizor.Enum.Metro.Style.Dark,
+                DrawMode = TabDrawMode.OwnerDrawFixed
+            };
+
+            // Create CPU-Z style tabs
+            CreateCPUTab(systemTabControl);
+            CreateMotherboardTab(systemTabControl);
+            CreateMemoryTab(systemTabControl);
+            CreateGraphicsTab(systemTabControl);
+
+            infoContainer.Controls.Add(systemTabControl);
+            infoTab.Controls.Add(infoContainer);
             _tabControl.TabPages.Add(infoTab);
+        }
+
+        private void CreateCPUTab(RTControls.MetroTabControl tabControl)
+        {
+            var cpuTab = new WinForms.TabPage("CPU")
+            {
+                BackColor = Color.FromArgb(45, 45, 48),
+                ForeColor = Color.White
+            };
+
+            var cpuPanel = new RTControls.Panel
+            {
+                Dock = DockStyle.Fill,
+                BackColor = Color.FromArgb(45, 45, 48),
+                Padding = new Padding(15)
+            };
+
+            var cpuInfo = GetProcessorInfo();
+            int yPos = 10;
+
+            // CPU Section Header
+            var cpuHeaderLabel = new Label
+            {
+                Text = "Processor",
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(100, 200, 255),
+                Location = new Point(15, yPos),
+                AutoSize = true
+            };
+            cpuPanel.Controls.Add(cpuHeaderLabel);
+            yPos += 30;
+
+            // Create CPU info display similar to CPU-Z
+            foreach (var info in cpuInfo)
+            {
+                yPos = CreateInfoRow(cpuPanel, info.key, info.value, yPos, 150);
+            }
+
+            yPos += 20;
+
+            // Clocks Section
+            var clocksHeaderLabel = new Label
+            {
+                Text = "Clocks",
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(100, 200, 255),
+                Location = new Point(15, yPos),
+                AutoSize = true
+            };
+            cpuPanel.Controls.Add(clocksHeaderLabel);
+            yPos += 30;
+
+            // Add clock information
+            var clockInfo = GetClockInfo();
+            foreach (var info in clockInfo)
+            {
+                yPos = CreateInfoRow(cpuPanel, info.key, info.value, yPos, 150);
+            }
+
+            yPos += 20;
+
+            // Cache Section
+            var cacheHeaderLabel = new Label
+            {
+                Text = "Cache",
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(100, 200, 255),
+                Location = new Point(15, yPos),
+                AutoSize = true
+            };
+            cpuPanel.Controls.Add(cacheHeaderLabel);
+            yPos += 30;
+
+            var cacheInfo = GetCacheInfo();
+            foreach (var info in cacheInfo)
+            {
+                yPos = CreateInfoRow(cpuPanel, info.key, info.value, yPos, 150);
+            }
+
+            cpuTab.Controls.Add(cpuPanel);
+            tabControl.TabPages.Add(cpuTab);
+        }
+
+        private void CreateMotherboardTab(RTControls.MetroTabControl tabControl)
+        {
+            var motherboardTab = new WinForms.TabPage("Motherboard")
+            {
+                BackColor = Color.FromArgb(45, 45, 48),
+                ForeColor = Color.White
+            };
+
+            var motherboardPanel = new RTControls.Panel
+            {
+                Dock = DockStyle.Fill,
+                BackColor = Color.FromArgb(45, 45, 48),
+                Padding = new Padding(15)
+            };
+
+            var motherboardInfo = GetMotherboardInfo();
+            int yPos = 10;
+
+            // Motherboard Section Header
+            var motherboardHeaderLabel = new Label
+            {
+                Text = "Motherboard",
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(100, 200, 255),
+                Location = new Point(15, yPos),
+                AutoSize = true
+            };
+            motherboardPanel.Controls.Add(motherboardHeaderLabel);
+            yPos += 30;
+
+            foreach (var info in motherboardInfo)
+            {
+                yPos = CreateInfoRow(motherboardPanel, info.key, info.value, yPos, 150);
+            }
+
+            yPos += 20;
+
+            // BIOS Section
+            var biosHeaderLabel = new Label
+            {
+                Text = "BIOS",
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(100, 200, 255),
+                Location = new Point(15, yPos),
+                AutoSize = true
+            };
+            motherboardPanel.Controls.Add(biosHeaderLabel);
+            yPos += 30;
+
+            var biosInfo = GetBIOSInfo();
+            foreach (var info in biosInfo)
+            {
+                yPos = CreateInfoRow(motherboardPanel, info.key, info.value, yPos, 150);
+            }
+
+            motherboardTab.Controls.Add(motherboardPanel);
+            tabControl.TabPages.Add(motherboardTab);
+        }
+
+        private void CreateMemoryTab(RTControls.MetroTabControl tabControl)
+        {
+            var memoryTab = new WinForms.TabPage("Memory")
+            {
+                BackColor = Color.FromArgb(45, 45, 48),
+                ForeColor = Color.White
+            };
+
+            var memoryPanel = new RTControls.Panel
+            {
+                Dock = DockStyle.Fill,
+                BackColor = Color.FromArgb(45, 45, 48),
+                Padding = new Padding(15)
+            };
+
+            int yPos = 10;
+
+            // General Memory Information
+            var memoryHeaderLabel = new Label
+            {
+                Text = "General",
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(100, 200, 255),
+                Location = new Point(15, yPos),
+                AutoSize = true
+            };
+            memoryPanel.Controls.Add(memoryHeaderLabel);
+            yPos += 30;
+
+            var memoryInfo = GetMemoryInfo();
+            foreach (var info in memoryInfo)
+            {
+                yPos = CreateInfoRow(memoryPanel, info.key, info.value, yPos, 150);
+            }
+
+            yPos += 20;
+
+            // Memory Slot Selection (like SPD tab)
+            var slotHeaderLabel = new Label
+            {
+                Text = "Memory Slot Selection",
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(100, 200, 255),
+                Location = new Point(15, yPos),
+                AutoSize = true
+            };
+            memoryPanel.Controls.Add(slotHeaderLabel);
+            yPos += 30;
+
+            // Create dropdown for memory slots
+            var slotComboBox = new RTControls.MetroComboBox
+            {
+                Location = new Point(15, yPos),
+                Size = new Size(200, 23),
+                Style = ReaLTaiizor.Enum.Metro.Style.Dark
+            };
+
+            // Add memory slots
+            var memorySlots = GetMemorySlots();
+            foreach (var slot in memorySlots)
+            {
+                slotComboBox.Items.Add(slot);
+            }
+
+            if (slotComboBox.Items.Count > 0)
+                slotComboBox.SelectedIndex = 0;
+
+            memoryPanel.Controls.Add(slotComboBox);
+            yPos += 40;
+
+            // Memory details panel that updates based on selection
+            var memoryDetailsPanel = new RTControls.Panel
+            {
+                Location = new Point(15, yPos),
+                Size = new Size(750, 200),
+                BackColor = Color.FromArgb(50, 50, 53)
+            };
+
+            // Event handler to update memory details when selection changes
+            slotComboBox.SelectedIndexChanged += (s, e) =>
+            {
+                UpdateMemorySlotDetails(memoryDetailsPanel, slotComboBox.SelectedIndex);
+            };
+
+            memoryPanel.Controls.Add(memoryDetailsPanel);
+
+            // Initialize with first slot
+            if (slotComboBox.Items.Count > 0)
+            {
+                UpdateMemorySlotDetails(memoryDetailsPanel, 0);
+            }
+
+            memoryTab.Controls.Add(memoryPanel);
+            tabControl.TabPages.Add(memoryTab);
+        }
+
+        private void CreateGraphicsTab(RTControls.MetroTabControl tabControl)
+        {
+            var graphicsTab = new WinForms.TabPage("Graphics")
+            {
+                BackColor = Color.FromArgb(45, 45, 48),
+                ForeColor = Color.White
+            };
+
+            var graphicsPanel = new RTControls.Panel
+            {
+                Dock = DockStyle.Fill,
+                BackColor = Color.FromArgb(45, 45, 48),
+                Padding = new Padding(15)
+            };
+
+            int yPos = 10;
+
+            // Display Device Selection Header
+            var deviceHeaderLabel = new Label
+            {
+                Text = "Display Device Selection",
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(100, 200, 255),
+                Location = new Point(15, yPos),
+                AutoSize = true
+            };
+            graphicsPanel.Controls.Add(deviceHeaderLabel);
+            yPos += 30;
+
+            // Create dropdown for graphics adapters
+            var gpuComboBox = new RTControls.MetroComboBox
+            {
+                Location = new Point(15, yPos),
+                Size = new Size(400, 23),
+                Style = ReaLTaiizor.Enum.Metro.Style.Dark
+            };
+
+            // Get all graphics adapters and prioritize dedicated GPUs
+            var graphicsAdapters = GetGraphicsAdapters();
+            int defaultIndex = 0;
+            
+            for (int i = 0; i < graphicsAdapters.Count; i++)
+            {
+                gpuComboBox.Items.Add(graphicsAdapters[i].displayName);
+                
+                // Set dedicated GPU as default (look for NVIDIA, AMD, Intel Arc)
+                if (graphicsAdapters[i].isDedicated)
+                {
+                    defaultIndex = i;
+                }
+            }
+
+            if (gpuComboBox.Items.Count > 0)
+                gpuComboBox.SelectedIndex = defaultIndex;
+
+            graphicsPanel.Controls.Add(gpuComboBox);
+            yPos += 40;
+
+            // Graphics details panel that updates based on selection
+            var gpuDetailsPanel = new RTControls.Panel
+            {
+                Location = new Point(15, yPos),
+                Size = new Size(750, 300),
+                BackColor = Color.FromArgb(50, 50, 53)
+            };
+
+            // Event handler to update GPU details when selection changes
+            gpuComboBox.SelectedIndexChanged += (s, e) =>
+            {
+                UpdateGPUDetails(gpuDetailsPanel, gpuComboBox.SelectedIndex, graphicsAdapters);
+            };
+
+            graphicsPanel.Controls.Add(gpuDetailsPanel);
+
+            // Initialize with selected GPU
+            if (gpuComboBox.Items.Count > 0)
+            {
+                UpdateGPUDetails(gpuDetailsPanel, defaultIndex, graphicsAdapters);
+            }
+
+            graphicsTab.Controls.Add(graphicsPanel);
+            tabControl.TabPages.Add(graphicsTab);
+        }
+
+        private int CreateInfoRow(Control parent, string label, string value, int yPos, int labelWidth)
+        {
+            var keyLabel = new Label
+            {
+                Text = label,
+                Font = new Font("Segoe UI", 9F),
+                ForeColor = Color.White,
+                Location = new Point(15, yPos),
+                Size = new Size(labelWidth, 20),
+                TextAlign = ContentAlignment.MiddleLeft
+            };
+            parent.Controls.Add(keyLabel);
+
+            var valueLabel = new Label
+            {
+                Text = value,
+                Font = new Font("Segoe UI", 9F),
+                ForeColor = Color.FromArgb(220, 220, 220),
+                Location = new Point(labelWidth + 20, yPos),
+                Size = new Size(400, 20),
+                TextAlign = ContentAlignment.MiddleLeft
+            };
+            parent.Controls.Add(valueLabel);
+
+            return yPos + 25;
         }
 
         private void CreateAdvancedTab()
@@ -1480,6 +1857,699 @@ namespace MyTekkiDebloat.WinUI
                     subItem.ForeColor = color;
                 }
             }
+        }
+
+        // System Information Gathering Methods
+
+        private List<(string key, string value)> GetClockInfo()
+        {
+            var info = new List<(string key, string value)>();
+            try
+            {
+                using var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_Processor");
+                foreach (ManagementObject obj in searcher.Get())
+                {
+                    info.Add(("Core Speed", $"{obj["CurrentClockSpeed"]} MHz"));
+                    info.Add(("Multiplier", $"x{(Convert.ToDouble(obj["CurrentClockSpeed"]) / 100):F1}"));
+                    info.Add(("Bus Speed", "100.0 MHz")); // Typical modern bus speed
+                    break;
+                }
+            }
+            catch (Exception ex)
+            {
+                info.Add(("Error", $"Unable to retrieve clock information: {ex.Message}"));
+            }
+            return info;
+        }
+
+        private List<(string key, string value)> GetCacheInfo()
+        {
+            var info = new List<(string key, string value)>();
+            try
+            {
+                using var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_Processor");
+                foreach (ManagementObject obj in searcher.Get())
+                {
+                    var l1Cache = obj["L1InstructionCacheSize"] ?? 0;
+                    var l2Cache = obj["L2CacheSize"] ?? 0;
+                    var l3Cache = obj["L3CacheSize"] ?? 0;
+                    
+                    info.Add(("L1 Data", $"{l1Cache} KBytes"));
+                    info.Add(("L1 Inst.", $"{l1Cache} KBytes"));
+                    info.Add(("Level 2", $"{l2Cache} KBytes"));
+                    info.Add(("Level 3", $"{l3Cache} KBytes"));
+                    break;
+                }
+            }
+            catch (Exception ex)
+            {
+                info.Add(("Error", $"Unable to retrieve cache information: {ex.Message}"));
+            }
+            return info;
+        }
+
+        private List<(string key, string value)> GetMotherboardInfo()
+        {
+            var info = new List<(string key, string value)>();
+            try
+            {
+                using var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_BaseBoard");
+                foreach (ManagementObject obj in searcher.Get())
+                {
+                    info.Add(("Manufacturer", obj["Manufacturer"]?.ToString() ?? "Unknown"));
+                    info.Add(("Model", obj["Product"]?.ToString() ?? "Unknown"));
+                    info.Add(("Revision", obj["Version"]?.ToString() ?? "Unknown"));
+                    break;
+                }
+
+                using var busSearcher = new ManagementObjectSearcher("SELECT * FROM Win32_SystemBus");
+                foreach (ManagementObject obj in busSearcher.Get())
+                {
+                    info.Add(("Bus Specs.", obj["Name"]?.ToString() ?? "PCI-Express"));
+                    break;
+                }
+
+                info.Add(("Chipset", "Intel/AMD Chipset")); // Generic placeholder
+                info.Add(("Southbridge", "Intel/AMD Southbridge")); // Generic placeholder
+            }
+            catch (Exception ex)
+            {
+                info.Add(("Error", $"Unable to retrieve motherboard information: {ex.Message}"));
+            }
+            return info;
+        }
+
+        private List<(string key, string value)> GetBIOSInfo()
+        {
+            var info = new List<(string key, string value)>();
+            try
+            {
+                using var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_BIOS");
+                foreach (ManagementObject obj in searcher.Get())
+                {
+                    info.Add(("Brand", obj["Manufacturer"]?.ToString() ?? "Unknown"));
+                    info.Add(("Version", obj["SMBIOSBIOSVersion"]?.ToString() ?? "Unknown"));
+                    info.Add(("Date", obj["ReleaseDate"]?.ToString()?.Substring(0, 8) ?? "Unknown"));
+                    break;
+                }
+            }
+            catch (Exception ex)
+            {
+                info.Add(("Error", $"Unable to retrieve BIOS information: {ex.Message}"));
+            }
+            return info;
+        }
+
+        private List<string> GetMemorySlots()
+        {
+            var slots = new List<string>();
+            try
+            {
+                using var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PhysicalMemory");
+                int slotNumber = 1;
+                foreach (ManagementObject obj in searcher.Get())
+                {
+                    var capacity = Convert.ToUInt64(obj["Capacity"]) / (1024 * 1024 * 1024);
+                    var manufacturer = obj["Manufacturer"]?.ToString() ?? "Unknown";
+                    slots.Add($"Slot #{slotNumber} - {capacity} GB {manufacturer}");
+                    slotNumber++;
+                }
+
+                if (slots.Count == 0)
+                {
+                    slots.Add("No memory modules detected");
+                }
+            }
+            catch (Exception ex)
+            {
+                slots.Add($"Error: {ex.Message}");
+            }
+            return slots;
+        }
+
+        private void UpdateMemorySlotDetails(RTControls.Panel panel, int slotIndex)
+        {
+            panel.Controls.Clear();
+            
+            try
+            {
+                using var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PhysicalMemory");
+                var memories = searcher.Get().Cast<ManagementObject>().ToArray();
+                
+                if (slotIndex >= 0 && slotIndex < memories.Length)
+                {
+                    var memory = memories[slotIndex];
+                    int yPos = 10;
+
+                    // Module details
+                    yPos = CreateInfoRow(panel, "Module Size", $"{Convert.ToUInt64(memory["Capacity"]) / (1024 * 1024 * 1024)} GB", yPos, 120);
+                    yPos = CreateInfoRow(panel, "Module Type", memory["MemoryType"]?.ToString() == "26" ? "DDR4" : "DDR3/Other", yPos, 120);
+                    yPos = CreateInfoRow(panel, "Module Manuf.", memory["Manufacturer"]?.ToString() ?? "Unknown", yPos, 120);
+                    yPos = CreateInfoRow(panel, "DRAM Manuf.", memory["Manufacturer"]?.ToString() ?? "Unknown", yPos, 120);
+                    yPos = CreateInfoRow(panel, "Part Number", memory["PartNumber"]?.ToString()?.Trim() ?? "Unknown", yPos, 120);
+                    yPos = CreateInfoRow(panel, "Serial Number", memory["SerialNumber"]?.ToString() ?? "Unknown", yPos, 120);
+                    yPos = CreateInfoRow(panel, "Week/Year", "Unknown", yPos, 120);
+                    yPos = CreateInfoRow(panel, "Correction", "None", yPos, 120);
+                }
+            }
+            catch (Exception ex)
+            {
+                CreateInfoRow(panel, "Error", $"Unable to load slot details: {ex.Message}", 10, 120);
+            }
+        }
+
+        private List<(string key, string value)> GetGraphicsInfo()
+        {
+            var info = new List<(string key, string value)>();
+            try
+            {
+                using var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_VideoController");
+                foreach (ManagementObject obj in searcher.Get())
+                {
+                    if (obj["Name"]?.ToString()?.Contains("Microsoft") == false) // Skip basic Microsoft adapters
+                    {
+                        info.Add(("Name", obj["Name"]?.ToString() ?? "Unknown"));
+                        info.Add(("Board Manuf.", obj["AdapterCompatibility"]?.ToString() ?? "Unknown"));
+                        
+                        var adapterRAM = obj["AdapterRAM"];
+                        if (adapterRAM != null && UInt32.TryParse(adapterRAM.ToString(), out uint ramBytes))
+                        {
+                            info.Add(("Memory Size", $"{ramBytes / (1024 * 1024)} MB"));
+                        }
+                        else
+                        {
+                            info.Add(("Memory Size", "Unknown"));
+                        }
+                        
+                        info.Add(("Memory Type", "GDDR6")); // Generic placeholder
+                        info.Add(("GPU", obj["VideoProcessor"]?.ToString() ?? "Unknown"));
+                        info.Add(("Technology", "8 nm")); // Generic placeholder
+                        info.Add(("Memory", $"{obj["AdapterRAM"] ?? 0} MB"));
+                        info.Add(("Cores", "Unknown"));
+                        info.Add(("Bus Width", "Unknown"));
+                        break; // Just get the first real GPU
+                    }
+                }
+                
+                if (info.Count == 0)
+                {
+                    info.Add(("Graphics", "No discrete graphics card detected"));
+                }
+            }
+            catch (Exception ex)
+            {
+                info.Add(("Error", $"Unable to retrieve graphics information: {ex.Message}"));
+            }
+            return info;
+        }
+
+        private List<(string displayName, bool isDedicated, ManagementObject adapter)> GetGraphicsAdapters()
+        {
+            var adapters = new List<(string displayName, bool isDedicated, ManagementObject adapter)>();
+            try
+            {
+                using var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_VideoController");
+                foreach (ManagementObject obj in searcher.Get())
+                {
+                    var name = obj["Name"]?.ToString();
+                    if (!string.IsNullOrEmpty(name))
+                    {
+                        // Determine if it's a dedicated GPU
+                        bool isDedicated = IsDedicatedGPU(name);
+                        
+                        // Create display name with some basic info
+                        var displayName = name;
+                        var adapterRAM = obj["AdapterRAM"];
+                        if (adapterRAM != null && UInt32.TryParse(adapterRAM.ToString(), out uint ramBytes) && ramBytes > 0)
+                        {
+                            displayName += $" ({ramBytes / (1024 * 1024)} MB)";
+                        }
+                        
+                        adapters.Add((displayName, isDedicated, obj));
+                    }
+                }
+                
+                // Sort so dedicated GPUs come first
+                adapters = adapters.OrderByDescending(a => a.isDedicated).ToList();
+                
+                if (adapters.Count == 0)
+                {
+                    adapters.Add(("No graphics adapters found", false, null!));
+                }
+            }
+            catch (Exception ex)
+            {
+                adapters.Add(($"Error loading graphics adapters: {ex.Message}", false, null!));
+            }
+            
+            return adapters;
+        }
+
+        private bool IsDedicatedGPU(string gpuName)
+        {
+            if (string.IsNullOrEmpty(gpuName))
+                return false;
+                
+            var name = gpuName.ToUpperInvariant();
+            
+            // Check for dedicated GPU indicators
+            return name.Contains("NVIDIA") || 
+                   name.Contains("GEFORCE") || 
+                   name.Contains("QUADRO") || 
+                   name.Contains("TESLA") ||
+                   name.Contains("AMD") || 
+                   name.Contains("RADEON") || 
+                   name.Contains("RX ") || 
+                   name.Contains("VEGA") ||
+                   name.Contains("INTEL ARC") ||
+                   (name.Contains("INTEL") && (name.Contains("ARC") || name.Contains("DG"))) ||
+                   // Exclude integrated graphics
+                   (!name.Contains("MICROSOFT") && 
+                    !name.Contains("BASIC") && 
+                    !name.Contains("STANDARD") &&
+                    !name.Contains("VGA") &&
+                    !name.Contains("UHD GRAPHICS") &&
+                    !name.Contains("HD GRAPHICS") &&
+                    !name.Contains("IRIS XE"));
+        }
+
+        private void UpdateGPUDetails(RTControls.Panel panel, int selectedIndex, List<(string displayName, bool isDedicated, ManagementObject adapter)> adapters)
+        {
+            panel.Controls.Clear();
+            
+            if (selectedIndex < 0 || selectedIndex >= adapters.Count || adapters[selectedIndex].adapter == null)
+            {
+                CreateInfoRow(panel, "Error", "No graphics adapter selected or adapter data unavailable", 10, 120);
+                return;
+            }
+            
+            try
+            {
+                var adapter = adapters[selectedIndex].adapter;
+                int yPos = 10;
+
+                // GPU Section
+                var gpuHeaderLabel = new Label
+                {
+                    Text = "GPU",
+                    Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                    ForeColor = Color.FromArgb(100, 200, 255),
+                    Location = new Point(15, yPos),
+                    AutoSize = true
+                };
+                panel.Controls.Add(gpuHeaderLabel);
+                yPos += 25;
+
+                // GPU Details
+                yPos = CreateInfoRow(panel, "Name", adapter["Name"]?.ToString() ?? "Unknown", yPos, 120);
+                yPos = CreateInfoRow(panel, "Board Manuf.", adapter["AdapterCompatibility"]?.ToString() ?? "Unknown", yPos, 120);
+                
+                // Code Name (try to determine from GPU name)
+                var codeName = GetGPUCodeName(adapter["Name"]?.ToString());
+                yPos = CreateInfoRow(panel, "Code Name", codeName, yPos, 120);
+                
+                yPos = CreateInfoRow(panel, "Revision", adapter["DriverVersion"]?.ToString() ?? "Unknown", yPos, 120);
+                yPos = CreateInfoRow(panel, "Technology", GetGPUTechnology(adapter["Name"]?.ToString()), yPos, 120);
+                yPos = CreateInfoRow(panel, "Die Size", "Unknown", yPos, 120);
+
+                yPos += 15;
+
+                // Memory Section
+                var memoryHeaderLabel = new Label
+                {
+                    Text = "Memory",
+                    Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                    ForeColor = Color.FromArgb(100, 200, 255),
+                    Location = new Point(15, yPos),
+                    AutoSize = true
+                };
+                panel.Controls.Add(memoryHeaderLabel);
+                yPos += 25;
+
+                var adapterRAM = adapter["AdapterRAM"];
+                var memorySize = "Unknown";
+                if (adapterRAM != null && UInt32.TryParse(adapterRAM.ToString(), out uint ramBytes) && ramBytes > 0)
+                {
+                    memorySize = $"{ramBytes / (1024 * 1024)} MB";
+                }
+
+                yPos = CreateInfoRow(panel, "Size", memorySize, yPos, 120);
+                yPos = CreateInfoRow(panel, "Type", GetGPUMemoryType(adapter["Name"]?.ToString()), yPos, 120);
+                yPos = CreateInfoRow(panel, "Bus Width", GetGPUBusWidth(adapter["Name"]?.ToString()), yPos, 120);
+                yPos = CreateInfoRow(panel, "Bandwidth", "Unknown", yPos, 120);
+
+                yPos += 15;
+
+                // Additional Info
+                var infoHeaderLabel = new Label
+                {
+                    Text = "Additional Information",
+                    Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                    ForeColor = Color.FromArgb(100, 200, 255),
+                    Location = new Point(15, yPos),
+                    AutoSize = true
+                };
+                panel.Controls.Add(infoHeaderLabel);
+                yPos += 25;
+
+                yPos = CreateInfoRow(panel, "DirectX Support", adapter["VideoModeDescription"]?.ToString() ?? "Unknown", yPos, 120);
+                yPos = CreateInfoRow(panel, "OpenGL Support", "Unknown", yPos, 120);
+                yPos = CreateInfoRow(panel, "Driver Version", adapter["DriverVersion"]?.ToString() ?? "Unknown", yPos, 120);
+                yPos = CreateInfoRow(panel, "Driver Date", adapter["DriverDate"]?.ToString() ?? "Unknown", yPos, 120);
+            }
+            catch (Exception ex)
+            {
+                CreateInfoRow(panel, "Error", $"Unable to load GPU details: {ex.Message}", 10, 120);
+            }
+        }
+
+        private string GetGPUCodeName(string? gpuName)
+        {
+            if (string.IsNullOrEmpty(gpuName))
+                return "Unknown";
+                
+            var name = gpuName.ToUpperInvariant();
+            
+            // NVIDIA RTX 30/40 series
+            if (name.Contains("RTX 4090")) return "AD102";
+            if (name.Contains("RTX 4080")) return "AD103";
+            if (name.Contains("RTX 4070")) return "AD104";
+            if (name.Contains("RTX 4060")) return "AD107";
+            if (name.Contains("RTX 3090")) return "GA102";
+            if (name.Contains("RTX 3080")) return "GA102";
+            if (name.Contains("RTX 3070")) return "GA104";
+            if (name.Contains("RTX 3060")) return "GA106";
+            
+            // AMD RDNA series
+            if (name.Contains("RX 7900")) return "Navi 31";
+            if (name.Contains("RX 7800")) return "Navi 32";
+            if (name.Contains("RX 7700")) return "Navi 32";
+            if (name.Contains("RX 7600")) return "Navi 33";
+            if (name.Contains("RX 6900")) return "Navi 21";
+            if (name.Contains("RX 6800")) return "Navi 21";
+            if (name.Contains("RX 6700")) return "Navi 22";
+            if (name.Contains("RX 6600")) return "Navi 23";
+            
+            return "Unknown";
+        }
+
+        private string GetGPUTechnology(string? gpuName)
+        {
+            if (string.IsNullOrEmpty(gpuName))
+                return "Unknown";
+                
+            var name = gpuName.ToUpperInvariant();
+            
+            // NVIDIA
+            if (name.Contains("RTX 40")) return "5 nm";
+            if (name.Contains("RTX 30")) return "8 nm";
+            if (name.Contains("RTX 20")) return "12 nm";
+            if (name.Contains("GTX 16")) return "12 nm";
+            
+            // AMD
+            if (name.Contains("RX 7")) return "5 nm";
+            if (name.Contains("RX 6")) return "7 nm";
+            if (name.Contains("RX 5")) return "7 nm";
+            
+            return "Unknown";
+        }
+
+        private string GetGPUMemoryType(string? gpuName)
+        {
+            if (string.IsNullOrEmpty(gpuName))
+                return "Unknown";
+                
+            var name = gpuName.ToUpperInvariant();
+            
+            // Modern GPUs typically use GDDR6/6X
+            if (name.Contains("RTX 4") || name.Contains("RX 7")) return "GDDR6X";
+            if (name.Contains("RTX 3") || name.Contains("RX 6")) return "GDDR6";
+            if (name.Contains("RTX 2") || name.Contains("RX 5")) return "GDDR6";
+            if (name.Contains("GTX 16")) return "GDDR6";
+            
+            // Older/integrated graphics
+            if (name.Contains("UHD") || name.Contains("HD GRAPHICS")) return "System Memory";
+            
+            return "GDDR6";
+        }
+
+        private string GetGPUBusWidth(string? gpuName)
+        {
+            if (string.IsNullOrEmpty(gpuName))
+                return "Unknown";
+                
+            var name = gpuName.ToUpperInvariant();
+            
+            // High-end GPUs
+            if (name.Contains("4090") || name.Contains("7900")) return "384-bit";
+            if (name.Contains("4080") || name.Contains("7800")) return "256-bit";
+            if (name.Contains("4070") || name.Contains("7700")) return "192-bit";
+            if (name.Contains("4060") || name.Contains("7600")) return "128-bit";
+            
+            // RTX 30 series
+            if (name.Contains("3090")) return "384-bit";
+            if (name.Contains("3080")) return "320-bit";
+            if (name.Contains("3070")) return "256-bit";
+            if (name.Contains("3060")) return "192-bit";
+            
+            return "Unknown";
+        }
+        private List<(string key, string value)> GetProcessorInfo()
+        {
+            var info = new List<(string key, string value)>();
+            try
+            {
+                using var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_Processor");
+                foreach (ManagementObject obj in searcher.Get())
+                {
+                    info.Add(("Processor Name", obj["Name"]?.ToString() ?? "Unknown"));
+                    info.Add(("Manufacturer", obj["Manufacturer"]?.ToString() ?? "Unknown"));
+                    info.Add(("Architecture", GetArchitectureString(obj["Architecture"]?.ToString())));
+                    info.Add(("Cores", obj["NumberOfCores"]?.ToString() ?? "Unknown"));
+                    info.Add(("Logical Processors", obj["NumberOfLogicalProcessors"]?.ToString() ?? "Unknown"));
+                    info.Add(("Max Clock Speed", $"{obj["MaxClockSpeed"]} MHz"));
+                    info.Add(("Current Clock Speed", $"{obj["CurrentClockSpeed"]} MHz"));
+                    info.Add(("L2 Cache Size", $"{obj["L2CacheSize"]} KB"));
+                    info.Add(("L3 Cache Size", $"{obj["L3CacheSize"]} KB"));
+                    break; // Just get the first processor
+                }
+            }
+            catch (Exception ex)
+            {
+                info.Add(("Error", $"Unable to retrieve processor information: {ex.Message}"));
+            }
+            return info;
+        }
+
+        private List<(string key, string value)> GetMemoryInfo()
+        {
+            var info = new List<(string key, string value)>();
+            try
+            {
+                using var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_ComputerSystem");
+                foreach (ManagementObject obj in searcher.Get())
+                {
+                    var totalMemory = Convert.ToUInt64(obj["TotalPhysicalMemory"]);
+                    info.Add(("Total Physical Memory", $"{totalMemory / (1024 * 1024 * 1024):F1} GB"));
+                    break;
+                }
+
+                var availableMemory = new PerformanceCounter("Memory", "Available MBytes");
+                var availableMB = availableMemory.NextValue();
+                info.Add(("Available Memory", $"{availableMB / 1024:F1} GB"));
+                
+                // Calculate usage percentage
+                var totalMemoryGB = Convert.ToUInt64(new ManagementObjectSearcher("SELECT * FROM Win32_ComputerSystem").Get().Cast<ManagementObject>().First()["TotalPhysicalMemory"]) / (1024.0 * 1024 * 1024);
+                var usagePercent = ((totalMemoryGB - (availableMB / 1024)) / totalMemoryGB) * 100;
+                info.Add(("Memory Usage", $"{usagePercent:F1}%"));
+            }
+            catch (Exception ex)
+            {
+                info.Add(("Error", $"Unable to retrieve memory information: {ex.Message}"));
+            }
+            return info;
+        }
+
+        private List<(string key, string value)> GetStorageInfo()
+        {
+            var info = new List<(string key, string value)>();
+            try
+            {
+                var drives = DriveInfo.GetDrives().Where(d => d.IsReady);
+                foreach (var drive in drives)
+                {
+                    var driveType = GetDriveTypeString(drive.Name);
+                    var totalGB = drive.TotalSize / (1024.0 * 1024 * 1024);
+                    var freeGB = drive.AvailableFreeSpace / (1024.0 * 1024 * 1024);
+                    var usedGB = totalGB - freeGB;
+                    var usagePercent = (usedGB / totalGB) * 100;
+
+                    info.Add(($"Drive {drive.Name}", $"{drive.DriveType} - {totalGB:F1} GB total, {freeGB:F1} GB free ({usagePercent:F1}% used)"));
+                }
+            }
+            catch (Exception ex)
+            {
+                info.Add(("Error", $"Unable to retrieve storage information: {ex.Message}"));
+            }
+            return info;
+        }
+
+        private List<(string key, string value)> GetWindowsInfo()
+        {
+            var info = new List<(string key, string value)>();
+            try
+            {
+                var version = Environment.OSVersion;
+                info.Add(("Operating System", $"{version.Platform} {version.Version}"));
+                info.Add(("Version String", version.VersionString));
+                info.Add(("Architecture", Environment.Is64BitOperatingSystem ? "64-bit" : "32-bit"));
+                info.Add(("Computer Name", Environment.MachineName));
+                info.Add(("User Domain", Environment.UserDomainName));
+                info.Add(("System Directory", Environment.SystemDirectory));
+                
+                // Get Windows edition from registry
+                using var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion");
+                if (key != null)
+                {
+                    info.Add(("Product Name", key.GetValue("ProductName")?.ToString() ?? "Unknown"));
+                    info.Add(("Edition", key.GetValue("EditionID")?.ToString() ?? "Unknown"));
+                    info.Add(("Build Number", key.GetValue("CurrentBuild")?.ToString() ?? "Unknown"));
+                    info.Add(("Release ID", key.GetValue("ReleaseId")?.ToString() ?? "Unknown"));
+                }
+            }
+            catch (Exception ex)
+            {
+                info.Add(("Error", $"Unable to retrieve Windows information: {ex.Message}"));
+            }
+            return info;
+        }
+
+        private List<(string key, string value)> GetPerformanceInfo()
+        {
+            var info = new List<(string key, string value)>();
+            try
+            {
+                var uptime = TimeSpan.FromMilliseconds(Environment.TickCount64);
+                info.Add(("System Uptime", $"{uptime.Days} days, {uptime.Hours} hours, {uptime.Minutes} minutes"));
+                
+                var processes = Process.GetProcesses();
+                info.Add(("Running Processes", processes.Length.ToString()));
+                
+                var workingSet = Environment.WorkingSet / (1024 * 1024);
+                info.Add(("Current Process Memory", $"{workingSet} MB"));
+                
+                info.Add(("Processor Count", Environment.ProcessorCount.ToString()));
+                info.Add((".NET Runtime Version", Environment.Version.ToString()));
+            }
+            catch (Exception ex)
+            {
+                info.Add(("Error", $"Unable to retrieve performance information: {ex.Message}"));
+            }
+            return info;
+        }
+
+        private List<(string key, string value)> GetNetworkInfo()
+        {
+            var info = new List<(string key, string value)>();
+            try
+            {
+                using var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_NetworkAdapterConfiguration WHERE IPEnabled = True");
+                var adapters = 0;
+                foreach (ManagementObject obj in searcher.Get())
+                {
+                    adapters++;
+                    var description = obj["Description"]?.ToString() ?? "Unknown Adapter";
+                    var ipAddresses = obj["IPAddress"] as string[];
+                    var ipv4 = ipAddresses?.FirstOrDefault(ip => !ip.Contains(":")) ?? "Not assigned";
+                    var ipv6 = ipAddresses?.FirstOrDefault(ip => ip.Contains(":")) ?? "Not assigned";
+                    
+                    info.Add(($"Network Adapter {adapters}", description));
+                    info.Add(($"IPv4 Address", ipv4));
+                    if (ipv6 != "Not assigned")
+                    {
+                        info.Add(($"IPv6 Address", ipv6.Length > 30 ? ipv6.Substring(0, 30) + "..." : ipv6));
+                    }
+                }
+                
+                if (adapters == 0)
+                {
+                    info.Add(("Network Status", "No active network adapters found"));
+                }
+            }
+            catch (Exception ex)
+            {
+                info.Add(("Error", $"Unable to retrieve network information: {ex.Message}"));
+            }
+            return info;
+        }
+
+        private List<(string key, string value)> GetSecurityInfo()
+        {
+            var info = new List<(string key, string value)>();
+            try
+            {
+                // Check if running as administrator
+                info.Add(("Administrator Rights", IsRunningAsAdministrator() ? "Yes" : "No"));
+                
+                // Check UAC status
+                using var uacKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System");
+                var uacEnabled = uacKey?.GetValue("EnableLUA")?.ToString() == "1";
+                info.Add(("User Account Control", uacEnabled ? "Enabled" : "Disabled"));
+                
+                // Check Windows Defender status (basic check)
+                try
+                {
+                    using var defenderKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows Defender");
+                    var defenderExists = defenderKey != null;
+                    info.Add(("Windows Defender", defenderExists ? "Installed" : "Not found"));
+                }
+                catch
+                {
+                    info.Add(("Windows Defender", "Status unknown"));
+                }
+                
+                info.Add(("Security Provider", "Windows Security"));
+            }
+            catch (Exception ex)
+            {
+                info.Add(("Error", $"Unable to retrieve security information: {ex.Message}"));
+            }
+            return info;
+        }
+
+        private string GetArchitectureString(string? arch)
+        {
+            return arch switch
+            {
+                "0" => "x86 (32-bit)",
+                "1" => "MIPS",
+                "2" => "Alpha",
+                "3" => "PowerPC", 
+                "5" => "ARM",
+                "6" => "Itanium (IA-64)",
+                "9" => "x64 (64-bit)",
+                "12" => "ARM64",
+                _ => arch ?? "Unknown"
+            };
+        }
+
+        private string GetDriveTypeString(string driveName)
+        {
+            try
+            {
+                using var searcher = new ManagementObjectSearcher($"SELECT * FROM Win32_LogicalDisk WHERE DeviceID = '{driveName.TrimEnd('\\')}:'");
+                foreach (ManagementObject obj in searcher.Get())
+                {
+                    var mediaType = obj["MediaType"]?.ToString();
+                    return mediaType switch
+                    {
+                        "12" => "SSD", // Fixed hard disk media
+                        _ => "HDD"
+                    };
+                }
+            }
+            catch { }
+            return "Unknown";
         }
 
     }
